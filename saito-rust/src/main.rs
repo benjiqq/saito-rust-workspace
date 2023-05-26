@@ -37,6 +37,9 @@ use saito_core::core::routing_thread::{
 use saito_core::core::verification_thread::{VerificationThread, VerifyRequest};
 use saito_core::lock_for_read;
 
+use clap::{Arg, App};
+
+
 use crate::saito::config_handler::ConfigHandler;
 use crate::saito::io_event::IoEvent;
 use crate::saito::network_controller::run_network_controller;
@@ -510,6 +513,23 @@ fn run_loop_thread(
 
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+
+    //let args: Vec<String> = std::env::args().collect();
+    //println!("{:?}", args);
+
+    let matches = App::new("My Program")
+        .arg(Arg::with_name("config")
+            //.short("c")
+            .long("config")
+            .value_name("FILE")
+            .help("Sets a custom config file")
+            .takes_value(true))
+        .get_matches();
+
+    // Get the file from the command line arguments (if provided)
+    let config = matches.value_of("config").unwrap_or("configs/config.json");
+    println!("Using config file: {}", config);
+
     ctrlc::set_handler(move || {
         info!("shutting down the node");
         process::exit(0);
@@ -533,7 +553,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         process::exit(99);
     }));
 
-    println!("Running saito");
+    info!("Running saito");
 
     let filter = tracing_subscriber::EnvFilter::from_default_env();
     let filter = filter.add_directive(Directive::from_str("tokio_tungstenite=info").unwrap());
@@ -550,9 +570,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let fmt_layer = tracing_subscriber::fmt::Layer::default().with_filter(filter);
 
     tracing_subscriber::registry().with(fmt_layer).init();
-
+    
     let configs: Arc<RwLock<dyn Configuration + Send + Sync>> = Arc::new(RwLock::new(
-        ConfigHandler::load_configs("configs/config.json".to_string())
+        ConfigHandler::load_configs(config.to_string())
             .expect("loading configs failed"),
     ));
 
@@ -582,7 +602,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (sender_to_network_controller, receiver_in_network_controller) =
         tokio::sync::mpsc::channel::<IoEvent>(channel_size);
 
-    info!("running saito controllers");
+    info!(".......running saito controllers");
 
     let keys = generate_keys();
     let context = Context::new(configs.clone(), keys.1, keys.0);
