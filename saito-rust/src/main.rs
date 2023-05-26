@@ -15,6 +15,7 @@ use tracing_subscriber::filter::Directive;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::Layer;
+use clap::{Arg, App};
 
 use saito_core::common::command::NetworkEvent;
 use saito_core::common::defs::{push_lock, StatVariable, LOCK_ORDER_CONFIGS, STAT_BIN_COUNT};
@@ -510,6 +511,18 @@ fn run_loop_thread(
 
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+
+    let matches = App::new("Saito")
+        .arg(Arg::with_name("config")
+            .long("config")
+            .value_name("FILE")
+            .help("Sets a custom config file")
+            .takes_value(true))
+        .get_matches();
+
+    // config.json as default
+    let config = matches.value_of("config").unwrap_or("configs/config.json");
+    
     ctrlc::set_handler(move || {
         info!("shutting down the node");
         process::exit(0);
@@ -551,8 +564,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     tracing_subscriber::registry().with(fmt_layer).init();
 
+    info!("Using config file: {}", config.to_string());
+
     let configs: Arc<RwLock<dyn Configuration + Send + Sync>> = Arc::new(RwLock::new(
-        ConfigHandler::load_configs("configs/config.json".to_string())
+        ConfigHandler::load_configs(config.to_string())
             .expect("loading configs failed"),
     ));
 
