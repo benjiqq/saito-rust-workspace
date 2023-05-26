@@ -5,8 +5,9 @@ use std::str::FromStr;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use log::info;
-use log::{debug, error, trace};
+use log::{debug, error, info, trace, warn};
+use std::fs::File;
+use fern::Dispatch;
 use tokio::sync::mpsc::{Receiver, Sender};
 use tokio::sync::RwLock;
 use tokio::task::JoinHandle;
@@ -509,191 +510,234 @@ fn run_loop_thread(
     loop_handle
 }
 
+fn setup_logger() -> Result<(), fern::InitError> {
+    let file = File::create("saito.log")?;
+    
+    let console_logger = fern::Dispatch::new()
+        .format(|out, message, record| {
+            out.finish(format_args!(
+                "[{}] [{}] {}", 
+                record.target(), 
+                record.level(),
+                message
+            ))
+        })
+        .chain(std::io::stdout());
+    
+    let file_logger = fern::Dispatch::new()
+        .format(|out, message, record| {
+            out.finish(format_args!(
+                "[{}] [{}] {}", 
+                record.target(), 
+                record.level(),
+                message
+            ))
+        })
+        .chain(file);
+    
+    let logger = Dispatch::new()
+        .chain(console_logger)
+        .chain(file_logger)
+        .apply()?;
+        
+    Ok(())
+}
+
+
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ctrlc::set_handler(move || {
-        info!("shutting down the node");
-        process::exit(0);
-    })
-    .expect("Error setting Ctrl-C handler");
+    setup_logger().expect("Failed to setup logger");
 
-    let orig_hook = panic::take_hook();
-    panic::set_hook(Box::new(move |panic_info| {
-        if let Some(location) = panic_info.location() {
-            error!(
-                "panic occurred in file '{}' at line {}, exiting ..",
-                location.file(),
-                location.line()
-            );
-        } else {
-            error!("panic occurred but can't get location information, exiting ..");
-        }
+    trace!("This is a TRACE message");
+    debug!("This is a DEBUG message");
+    info!("This is an INFO message");
+    warn!("This is a WARN message");
+    error!("This is an ERROR message");
+    
 
-        // invoke the default handler and exit the process
-        orig_hook(panic_info);
-        process::exit(99);
-    }));
+    // ctrlc::set_handler(move || {
+    //     info!("shutting down the node");
+    //     process::exit(0);
+    // })
+    // .expect("Error setting Ctrl-C handler");
 
-    println!("Running saito");
+    // let orig_hook = panic::take_hook();
+    // panic::set_hook(Box::new(move |panic_info| {
+    //     if let Some(location) = panic_info.location() {
+    //         error!(
+    //             "panic occurred in file '{}' at line {}, exiting ..",
+    //             location.file(),
+    //             location.line()
+    //         );
+    //     } else {
+    //         error!("panic occurred but can't get location information, exiting ..");
+    //     }
 
-    let filter = tracing_subscriber::EnvFilter::from_default_env();
-    let filter = filter.add_directive(Directive::from_str("tokio_tungstenite=info").unwrap());
-    let filter = filter.add_directive(Directive::from_str("tungstenite=info").unwrap());
-    let filter = filter.add_directive(Directive::from_str("mio::poll=info").unwrap());
-    let filter = filter.add_directive(Directive::from_str("hyper::proto=info").unwrap());
-    let filter = filter.add_directive(Directive::from_str("hyper::client=info").unwrap());
-    let filter = filter.add_directive(Directive::from_str("want=info").unwrap());
-    let filter = filter.add_directive(Directive::from_str("reqwest::async_impl=info").unwrap());
-    let filter = filter.add_directive(Directive::from_str("reqwest::connect=info").unwrap());
-    let filter = filter.add_directive(Directive::from_str("warp::filters=info").unwrap());
-    // let filter = filter.add_directive(Directive::from_str("saito_stats=info").unwrap());
+    //     // invoke the default handler and exit the process
+    //     orig_hook(panic_info);
+    //     process::exit(99);
+    // }));
 
-    let fmt_layer = tracing_subscriber::fmt::Layer::default().with_filter(filter);
+    // println!("Running saito");
 
-    tracing_subscriber::registry().with(fmt_layer).init();
+    // let filter = tracing_subscriber::EnvFilter::from_default_env();
+    // let filter = filter.add_directive(Directive::from_str("tokio_tungstenite=info").unwrap());
+    // let filter = filter.add_directive(Directive::from_str("tungstenite=info").unwrap());
+    // let filter = filter.add_directive(Directive::from_str("mio::poll=info").unwrap());
+    // let filter = filter.add_directive(Directive::from_str("hyper::proto=info").unwrap());
+    // let filter = filter.add_directive(Directive::from_str("hyper::client=info").unwrap());
+    // let filter = filter.add_directive(Directive::from_str("want=info").unwrap());
+    // let filter = filter.add_directive(Directive::from_str("reqwest::async_impl=info").unwrap());
+    // let filter = filter.add_directive(Directive::from_str("reqwest::connect=info").unwrap());
+    // let filter = filter.add_directive(Directive::from_str("warp::filters=info").unwrap());
+    // // let filter = filter.add_directive(Directive::from_str("saito_stats=info").unwrap());
 
-    let configs: Arc<RwLock<dyn Configuration + Send + Sync>> = Arc::new(RwLock::new(
-        ConfigHandler::load_configs("configs/config.json".to_string())
-            .expect("loading configs failed"),
-    ));
+    // let fmt_layer = tracing_subscriber::fmt::Layer::default().with_filter(filter);
 
-    let channel_size;
-    let thread_sleep_time_in_ms;
-    let stat_timer_in_ms;
-    let verification_thread_count;
-    let fetch_batch_size;
+    // tracing_subscriber::registry().with(fmt_layer).init();
 
-    {
-        let (configs, _configs_) = lock_for_read!(configs, LOCK_ORDER_CONFIGS);
+    // let configs: Arc<RwLock<dyn Configuration + Send + Sync>> = Arc::new(RwLock::new(
+    //     ConfigHandler::load_configs("configs/config.json".to_string())
+    //         .expect("loading configs failed"),
+    // ));
 
-        channel_size = configs.get_server_configs().unwrap().channel_size as usize;
-        thread_sleep_time_in_ms = configs
-            .get_server_configs()
-            .unwrap()
-            .thread_sleep_time_in_ms;
-        stat_timer_in_ms = configs.get_server_configs().unwrap().stat_timer_in_ms;
-        verification_thread_count = configs.get_server_configs().unwrap().verification_threads;
-        fetch_batch_size = configs.get_server_configs().unwrap().block_fetch_batch_size as usize;
-        assert_ne!(fetch_batch_size, 0);
-    }
+    // let channel_size;
+    // let thread_sleep_time_in_ms;
+    // let stat_timer_in_ms;
+    // let verification_thread_count;
+    // let fetch_batch_size;
 
-    let (event_sender_to_loop, event_receiver_in_loop) =
-        tokio::sync::mpsc::channel::<IoEvent>(channel_size);
+    // {
+    //     let (configs, _configs_) = lock_for_read!(configs, LOCK_ORDER_CONFIGS);
 
-    let (sender_to_network_controller, receiver_in_network_controller) =
-        tokio::sync::mpsc::channel::<IoEvent>(channel_size);
+    //     channel_size = configs.get_server_configs().unwrap().channel_size as usize;
+    //     thread_sleep_time_in_ms = configs
+    //         .get_server_configs()
+    //         .unwrap()
+    //         .thread_sleep_time_in_ms;
+    //     stat_timer_in_ms = configs.get_server_configs().unwrap().stat_timer_in_ms;
+    //     verification_thread_count = configs.get_server_configs().unwrap().verification_threads;
+    //     fetch_batch_size = configs.get_server_configs().unwrap().block_fetch_batch_size as usize;
+    //     assert_ne!(fetch_batch_size, 0);
+    // }
 
-    info!("running saito controllers");
+    // let (event_sender_to_loop, event_receiver_in_loop) =
+    //     tokio::sync::mpsc::channel::<IoEvent>(channel_size);
 
-    let keys = generate_keys();
-    let wallet = Arc::new(RwLock::new(Wallet::new(keys.1, keys.0)));
-    {
-        Wallet::load(Box::new(RustIOHandler::new(
-            sender_to_network_controller.clone(),
-            ROUTING_EVENT_PROCESSOR_ID,
-        )))
-        .await;
-    }
-    let context = Context::new(configs.clone(), wallet);
+    // let (sender_to_network_controller, receiver_in_network_controller) =
+    //     tokio::sync::mpsc::channel::<IoEvent>(channel_size);
 
-    let peers = Arc::new(RwLock::new(PeerCollection::new()));
+    // info!("running saito controllers");
 
-    let (sender_to_consensus, receiver_for_consensus) =
-        tokio::sync::mpsc::channel::<ConsensusEvent>(channel_size);
+    // let keys = generate_keys();
+    // let wallet = Arc::new(RwLock::new(Wallet::new(keys.1, keys.0)));
+    // {
+    //     Wallet::load(Box::new(RustIOHandler::new(
+    //         sender_to_network_controller.clone(),
+    //         ROUTING_EVENT_PROCESSOR_ID,
+    //     )))
+    //     .await;
+    // }
+    // let context = Context::new(configs.clone(), wallet);
 
-    let (sender_to_routing, receiver_for_routing) =
-        tokio::sync::mpsc::channel::<RoutingEvent>(channel_size);
+    // let peers = Arc::new(RwLock::new(PeerCollection::new()));
 
-    let (sender_to_miner, receiver_for_miner) =
-        tokio::sync::mpsc::channel::<MiningEvent>(channel_size);
-    let (sender_to_stat, receiver_for_stat) = tokio::sync::mpsc::channel::<String>(channel_size);
+    // let (sender_to_consensus, receiver_for_consensus) =
+    //     tokio::sync::mpsc::channel::<ConsensusEvent>(channel_size);
 
-    let (senders, verification_handles) = run_verification_threads(
-        sender_to_consensus.clone(),
-        context.blockchain.clone(),
-        peers.clone(),
-        context.wallet.clone(),
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-        verification_thread_count,
-        sender_to_stat.clone(),
-    )
-    .await;
+    // let (sender_to_routing, receiver_for_routing) =
+    //     tokio::sync::mpsc::channel::<RoutingEvent>(channel_size);
 
-    let (network_event_sender_to_routing, routing_handle) = run_routing_event_processor(
-        sender_to_network_controller.clone(),
-        configs.clone(),
-        &context,
-        peers.clone(),
-        &sender_to_consensus,
-        receiver_for_routing,
-        &sender_to_miner,
-        senders,
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-        channel_size,
-        sender_to_stat.clone(),
-        fetch_batch_size,
-    )
-    .await;
+    // let (sender_to_miner, receiver_for_miner) =
+    //     tokio::sync::mpsc::channel::<MiningEvent>(channel_size);
+    // let (sender_to_stat, receiver_for_stat) = tokio::sync::mpsc::channel::<String>(channel_size);
 
-    let (_network_event_sender_to_consensus, blockchain_handle) = run_consensus_event_processor(
-        &context,
-        peers.clone(),
-        receiver_for_consensus,
-        &sender_to_routing,
-        sender_to_miner,
-        sender_to_network_controller.clone(),
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-        channel_size,
-        sender_to_stat.clone(),
-    )
-    .await;
+    // let (senders, verification_handles) = run_verification_threads(
+    //     sender_to_consensus.clone(),
+    //     context.blockchain.clone(),
+    //     peers.clone(),
+    //     context.wallet.clone(),
+    //     stat_timer_in_ms,
+    //     thread_sleep_time_in_ms,
+    //     verification_thread_count,
+    //     sender_to_stat.clone(),
+    // )
+    // .await;
 
-    let (_network_event_sender_to_mining, miner_handle) = run_mining_event_processor(
-        &context,
-        &sender_to_consensus,
-        receiver_for_miner,
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-        channel_size,
-        sender_to_stat.clone(),
-    )
-    .await;
-    let stat_handle = run_thread(
-        Box::new(StatThread::new().await),
-        None,
-        Some(receiver_for_stat),
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-    )
-    .await;
-    let loop_handle = run_loop_thread(
-        event_receiver_in_loop,
-        network_event_sender_to_routing,
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-        sender_to_stat.clone(),
-    );
+    // let (network_event_sender_to_routing, routing_handle) = run_routing_event_processor(
+    //     sender_to_network_controller.clone(),
+    //     configs.clone(),
+    //     &context,
+    //     peers.clone(),
+    //     &sender_to_consensus,
+    //     receiver_for_routing,
+    //     &sender_to_miner,
+    //     senders,
+    //     stat_timer_in_ms,
+    //     thread_sleep_time_in_ms,
+    //     channel_size,
+    //     sender_to_stat.clone(),
+    //     fetch_batch_size,
+    // )
+    // .await;
 
-    let network_handle = tokio::spawn(run_network_controller(
-        receiver_in_network_controller,
-        event_sender_to_loop.clone(),
-        configs.clone(),
-        context.blockchain.clone(),
-        sender_to_stat.clone(),
-        peers.clone(),
-    ));
+    // let (_network_event_sender_to_consensus, blockchain_handle) = run_consensus_event_processor(
+    //     &context,
+    //     peers.clone(),
+    //     receiver_for_consensus,
+    //     &sender_to_routing,
+    //     sender_to_miner,
+    //     sender_to_network_controller.clone(),
+    //     stat_timer_in_ms,
+    //     thread_sleep_time_in_ms,
+    //     channel_size,
+    //     sender_to_stat.clone(),
+    // )
+    // .await;
 
-    let _result = tokio::join!(
-        routing_handle,
-        blockchain_handle,
-        miner_handle,
-        loop_handle,
-        network_handle,
-        stat_handle,
-        futures::future::join_all(verification_handles)
-    );
+    // let (_network_event_sender_to_mining, miner_handle) = run_mining_event_processor(
+    //     &context,
+    //     &sender_to_consensus,
+    //     receiver_for_miner,
+    //     stat_timer_in_ms,
+    //     thread_sleep_time_in_ms,
+    //     channel_size,
+    //     sender_to_stat.clone(),
+    // )
+    // .await;
+    // let stat_handle = run_thread(
+    //     Box::new(StatThread::new().await),
+    //     None,
+    //     Some(receiver_for_stat),
+    //     stat_timer_in_ms,
+    //     thread_sleep_time_in_ms,
+    // )
+    // .await;
+    // let loop_handle = run_loop_thread(
+    //     event_receiver_in_loop,
+    //     network_event_sender_to_routing,
+    //     stat_timer_in_ms,
+    //     thread_sleep_time_in_ms,
+    //     sender_to_stat.clone(),
+    // );
+
+    // let network_handle = tokio::spawn(run_network_controller(
+    //     receiver_in_network_controller,
+    //     event_sender_to_loop.clone(),
+    //     configs.clone(),
+    //     context.blockchain.clone(),
+    //     sender_to_stat.clone(),
+    //     peers.clone(),
+    // ));
+
+    // let _result = tokio::join!(
+    //     routing_handle,
+    //     blockchain_handle,
+    //     miner_handle,
+    //     loop_handle,
+    //     network_handle,
+    //     stat_handle,
+    //     futures::future::join_all(verification_handles)
+    // );
     Ok(())
 }
