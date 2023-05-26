@@ -560,9 +560,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let filter = filter.add_directive(Directive::from_str("warp::filters=info").unwrap());
     // let filter = filter.add_directive(Directive::from_str("saito_stats=info").unwrap());
 
-    let fmt_layer = tracing_subscriber::fmt::Layer::default().with_filter(filter);
+    //let fmt_layer = tracing_subscriber::fmt::Layer::default().with_filter(filter);
+    let fmt_layer = tracing_subscriber::fmt::Layer::default()
+        .with_writer(std::io::stderr)
+        .with_filter(filter);
 
-    tracing_subscriber::registry().with(fmt_layer).init();
+    let subscriber = tracing_subscriber::registry()
+        .with(fmt_layer)
+        .with(tracing_subscriber::fmt::Layer::default().event_format(tracing_subscriber::fmt::format().with_file(true).with_line_number(true)));
+    
+    subscriber.init();
 
     info!("Using config file: {}", config.to_string());
 
