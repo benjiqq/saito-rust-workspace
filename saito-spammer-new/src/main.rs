@@ -32,7 +32,7 @@ use saito_core::core::data::network::Network;
 use saito_core::core::data::peer_collection::PeerCollection;
 use saito_core::core::data::storage::Storage;
 use saito_core::core::data::wallet::Wallet;
-use saito_core::core::mining_thread::{MiningEvent, MiningThread};
+//use saito_core::core::mining_thread::{MiningEvent, MiningThread};
 use saito_core::core::routing_thread::{
     PeerState, RoutingEvent, RoutingStats, RoutingThread, StaticPeer,
 };
@@ -53,7 +53,7 @@ mod saito;
 
 const ROUTING_EVENT_PROCESSOR_ID: u8 = 1;
 const CONSENSUS_EVENT_PROCESSOR_ID: u8 = 2;
-const MINING_EVENT_PROCESSOR_ID: u8 = 3;
+//const MINING_EVENT_PROCESSOR_ID: u8 = 3;
 
 async fn run_thread<T>(
     mut event_processor: Box<(dyn ProcessEvent<T> + Send + 'static)>,
@@ -131,235 +131,40 @@ where
     })
 }
 
-async fn run_mining_event_processor(
-    context: &Context,
-    sender_to_mempool: &Sender<ConsensusEvent>,
-    receiver_for_miner: Receiver<MiningEvent>,
-    stat_timer_in_ms: u64,
-    thread_sleep_time_in_ms: u64,
-    sender_to_stat: Sender<String>,
-    configs: Arc<RwLock<dyn Configuration + Send + Sync>>,
-) -> JoinHandle<()> {
-    let mining_event_processor = MiningThread {
-        wallet: context.wallet.clone(),
-        sender_to_mempool: sender_to_mempool.clone(),
-        time_keeper: Box::new(TimeKeeper {}),
-        miner_active: false,
-        target: [0; 32],
-        difficulty: 0,
-        public_key: [0; 33],
-        mined_golden_tickets: 0,
-        stat_sender: sender_to_stat.clone(),
-        configs,
-        enabled: false,
-    };
-    debug!("running miner thread");
-    let miner_handle = run_thread(
-        Box::new(mining_event_processor),
-        None,
-        Some(receiver_for_miner),
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-    )
-    .await;
-    miner_handle
-}
+// async fn run_mining_event_processor(
+//     context: &Context,
+//     sender_to_mempool: &Sender<ConsensusEvent>,
+//     receiver_for_miner: Receiver<MiningEvent>,
+//     stat_timer_in_ms: u64,
+//     thread_sleep_time_in_ms: u64,
+//     sender_to_stat: Sender<String>,
+//     configs: Arc<RwLock<dyn Configuration + Send + Sync>>,
+// ) -> JoinHandle<()> {
+//     let mining_event_processor = MiningThread {
+//         wallet: context.wallet.clone(),
+//         sender_to_mempool: sender_to_mempool.clone(),
+//         time_keeper: Box::new(TimeKeeper {}),
+//         miner_active: false,
+//         target: [0; 32],
+//         difficulty: 0,
+//         public_key: [0; 33],
+//         mined_golden_tickets: 0,
+//         stat_sender: sender_to_stat.clone(),
+//         configs,
+//         enabled: false,
+//     };
+//     debug!("running miner thread");
+//     let miner_handle = run_thread(
+//         Box::new(mining_event_processor),
+//         None,
+//         Some(receiver_for_miner),
+//         stat_timer_in_ms,
+//         thread_sleep_time_in_ms,
+//     )
+//     .await;
+//     miner_handle
+// }
 
-async fn run_consensus_event_processor(
-    context: &Context,
-    peers: Arc<RwLock<PeerCollection>>,
-    receiver_for_blockchain: Receiver<ConsensusEvent>,
-    sender_to_routing: &Sender<RoutingEvent>,
-    sender_to_miner: Sender<MiningEvent>,
-    sender_to_network_controller: Sender<IoEvent>,
-    stat_timer_in_ms: u64,
-    thread_sleep_time_in_ms: u64,
-    sender_to_stat: Sender<String>,
-) -> JoinHandle<()> {
-    let result = std::env::var("GEN_TX");
-    let mut create_test_tx = false;
-    if result.is_ok() {
-        create_test_tx = result.unwrap().eq("1");
-    }
-    let generate_genesis_block: bool;
-    {
-        let (configs, _configs_) = lock_for_read!(context.configuration, LOCK_ORDER_CONFIGS);
-
-        // if we have peers defined in configs, there's already an existing network. so we don't need to generate the first block.
-        generate_genesis_block = configs.get_peer_configs().is_empty();
-    }
-    let consensus_event_processor = ConsensusThread {
-        mempool: context.mempool.clone(),
-        blockchain: context.blockchain.clone(),
-        wallet: context.wallet.clone(),
-        generate_genesis_block,
-        sender_to_router: sender_to_routing.clone(),
-        sender_to_miner: sender_to_miner.clone(),
-        // sender_global: global_sender.clone(),
-        time_keeper: Box::new(TimeKeeper {}),
-        network: Network::new(
-            Box::new(RustIOHandler::new(
-                sender_to_network_controller.clone(),
-                CONSENSUS_EVENT_PROCESSOR_ID,
-            )),
-            peers.clone(),
-            context.wallet.clone(),
-            context.configuration.clone(),
-        ),
-        block_producing_timer: 0,
-        tx_producing_timer: 0,
-        create_test_tx,
-        storage: Storage::new(Box::new(RustIOHandler::new(
-            sender_to_network_controller.clone(),
-            CONSENSUS_EVENT_PROCESSOR_ID,
-        ))),
-        stats: ConsensusStats::new(sender_to_stat.clone()),
-        txs_for_mempool: vec![],
-        stat_sender: sender_to_stat.clone(),
-        configs: context.configuration.clone(),
-    };
-
-    debug!("running mempool thread");
-    let consensus_handle = run_thread(
-        Box::new(consensus_event_processor),
-        None,
-        Some(receiver_for_blockchain),
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-    )
-    .await;
-
-    consensus_handle
-}
-
-async fn run_verification_threads(
-    sender_to_consensus: Sender<ConsensusEvent>,
-    blockchain: Arc<RwLock<Blockchain>>,
-    peers: Arc<RwLock<PeerCollection>>,
-    wallet: Arc<RwLock<Wallet>>,
-    stat_timer_in_ms: u64,
-    thread_sleep_time_in_ms: u64,
-    verification_thread_count: u16,
-    sender_to_stat: Sender<String>,
-) -> (Vec<Sender<VerifyRequest>>, Vec<JoinHandle<()>>) {
-    let mut senders = vec![];
-    let mut thread_handles = vec![];
-
-    for i in 0..verification_thread_count {
-        let (sender, receiver) = tokio::sync::mpsc::channel(10_000);
-        senders.push(sender);
-        let verification_thread = VerificationThread {
-            sender_to_consensus: sender_to_consensus.clone(),
-            blockchain: blockchain.clone(),
-            peers: peers.clone(),
-            wallet: wallet.clone(),
-            processed_txs: StatVariable::new(
-                format!("verification_{:?}::processed_txs", i),
-                STAT_BIN_COUNT,
-                sender_to_stat.clone(),
-            ),
-            processed_blocks: StatVariable::new(
-                format!("verification_{:?}::processed_blocks", i),
-                STAT_BIN_COUNT,
-                sender_to_stat.clone(),
-            ),
-            processed_msgs: StatVariable::new(
-                format!("verification_{:?}::processed_msgs", i),
-                STAT_BIN_COUNT,
-                sender_to_stat.clone(),
-            ),
-            invalid_txs: StatVariable::new(
-                format!("verification_{:?}::invalid_txs", i),
-                STAT_BIN_COUNT,
-                sender_to_stat.clone(),
-            ),
-            stat_sender: sender_to_stat.clone(),
-        };
-
-        let thread_handle = run_thread(
-            Box::new(verification_thread),
-            None,
-            Some(receiver),
-            stat_timer_in_ms,
-            thread_sleep_time_in_ms,
-        )
-        .await;
-        thread_handles.push(thread_handle);
-    }
-
-    (senders, thread_handles)
-}
-
-async fn run_routing_event_processor(
-    sender_to_io_controller: Sender<IoEvent>,
-    configs: Arc<RwLock<dyn Configuration + Send + Sync>>,
-    context: &Context,
-    peers: Arc<RwLock<PeerCollection>>,
-    sender_to_mempool: &Sender<ConsensusEvent>,
-    receiver_for_routing: Receiver<RoutingEvent>,
-    sender_to_miner: &Sender<MiningEvent>,
-    senders: Vec<Sender<VerifyRequest>>,
-    stat_timer_in_ms: u64,
-    thread_sleep_time_in_ms: u64,
-    channel_size: usize,
-    sender_to_stat: Sender<String>,
-    fetch_batch_size: usize,
-) -> (Sender<NetworkEvent>, JoinHandle<()>) {
-    let mut routing_event_processor = RoutingThread {
-        blockchain: context.blockchain.clone(),
-        sender_to_consensus: sender_to_mempool.clone(),
-        sender_to_miner: sender_to_miner.clone(),
-        time_keeper: Box::new(TimeKeeper {}),
-        static_peers: vec![],
-        configs: configs.clone(),
-        wallet: context.wallet.clone(),
-        network: Network::new(
-            Box::new(RustIOHandler::new(
-                sender_to_io_controller.clone(),
-                ROUTING_EVENT_PROCESSOR_ID,
-            )),
-            peers.clone(),
-            context.wallet.clone(),
-            context.configuration.clone(),
-        ),
-        reconnection_timer: 0,
-        stats: RoutingStats::new(sender_to_stat.clone()),
-        senders_to_verification: senders,
-        last_verification_thread_index: 0,
-        stat_sender: sender_to_stat.clone(),
-        blockchain_sync_state: BlockchainSyncState::new(fetch_batch_size),
-        initial_connection: false,
-        reconnection_wait_time: 0,
-    };
-    {
-        let (configs, _configs_) = lock_for_read!(configs, LOCK_ORDER_CONFIGS);
-        routing_event_processor.reconnection_wait_time =
-            configs.get_server_configs().unwrap().reconnection_wait_time;
-        let peers = configs.get_peer_configs();
-        for peer in peers {
-            routing_event_processor.static_peers.push(StaticPeer {
-                peer_details: (*peer).clone(),
-                peer_state: PeerState::Disconnected,
-                peer_index: 0,
-            });
-        }
-    }
-
-    let (interface_sender_to_routing, interface_receiver_for_routing) =
-        tokio::sync::mpsc::channel::<NetworkEvent>(channel_size);
-
-    debug!("running blockchain thread");
-    let routing_handle = run_thread(
-        Box::new(routing_event_processor),
-        Some(interface_receiver_for_routing),
-        Some(receiver_for_routing),
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-    )
-    .await;
-
-    (interface_sender_to_routing, routing_handle)
-}
 
 // TODO : to be moved to routing event processor
 fn run_loop_thread(
@@ -367,7 +172,9 @@ fn run_loop_thread(
     network_event_sender_to_routing_ep: Sender<NetworkEvent>,
     thread_sleep_time_in_ms: u64,
 ) -> JoinHandle<()> {
+    debug!("start run loop");
     let loop_handle = tokio::spawn(async move {
+        debug!("run loop");
         let mut work_done: bool;
         loop {
             work_done = false;
@@ -446,7 +253,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         process::exit(99);
     }));
 
-    println!("Running saito");
+    println!("Running saito spammer");
 
     // install global subscriber configured based on RUST_LOG envvar.
 
@@ -530,106 +337,106 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (sender_to_routing, receiver_for_routing) =
         tokio::sync::mpsc::channel::<RoutingEvent>(channel_size);
 
-    let (sender_to_miner, receiver_for_miner) =
-        tokio::sync::mpsc::channel::<MiningEvent>(channel_size);
+    // let (sender_to_miner, receiver_for_miner) =
+    //     tokio::sync::mpsc::channel::<MiningEvent>(channel_size);
 
     let (sender_to_stat, receiver_for_stat) = tokio::sync::mpsc::channel::<String>(channel_size);
 
-    let (senders, verification_handles) = run_verification_threads(
-        sender_to_consensus.clone(),
-        context.blockchain.clone(),
-        peers.clone(),
-        context.wallet.clone(),
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-        verification_thread_count,
-        sender_to_stat.clone(),
-    )
-    .await;
+    // let (senders, verification_handles) = run_verification_threads(
+    //     sender_to_consensus.clone(),
+    //     context.blockchain.clone(),
+    //     peers.clone(),
+    //     context.wallet.clone(),
+    //     stat_timer_in_ms,
+    //     thread_sleep_time_in_ms,
+    //     verification_thread_count,
+    //     sender_to_stat.clone(),
+    // )
+    // .await;
 
-    let (network_event_sender_to_routing, routing_handle) = run_routing_event_processor(
-        sender_to_network_controller.clone(),
-        configs_clone.clone(),
-        &context,
-        peers.clone(),
-        &sender_to_consensus,
-        receiver_for_routing,
-        &sender_to_miner,
-        senders,
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-        channel_size,
-        sender_to_stat.clone(),
-        fetch_batch_size,
-    )
-    .await;
+    // let (network_event_sender_to_routing, routing_handle) = run_routing_event_processor(
+    //     sender_to_network_controller.clone(),
+    //     configs_clone.clone(),
+    //     &context,
+    //     peers.clone(),
+    //     &sender_to_consensus,
+    //     receiver_for_routing,
+    //     &sender_to_miner,
+    //     senders,
+    //     stat_timer_in_ms,
+    //     thread_sleep_time_in_ms,
+    //     channel_size,
+    //     sender_to_stat.clone(),
+    //     fetch_batch_size,
+    // )
+    // .await;
 
-    let blockchain_handle = run_consensus_event_processor(
-        &context,
-        peers.clone(),
-        receiver_for_consensus,
-        &sender_to_routing,
-        sender_to_miner,
-        sender_to_network_controller.clone(),
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-        sender_to_stat.clone(),
-    )
-    .await;
+    // let blockchain_handle = run_consensus_event_processor(
+    //     &context,
+    //     peers.clone(),
+    //     receiver_for_consensus,
+    //     &sender_to_routing,
+    //     sender_to_miner,
+    //     sender_to_network_controller.clone(),
+    //     stat_timer_in_ms,
+    //     thread_sleep_time_in_ms,
+    //     sender_to_stat.clone(),
+    // )
+    // .await;
 
-    let miner_handle = run_mining_event_processor(
-        &context,
-        &sender_to_consensus,
-        receiver_for_miner,
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-        sender_to_stat.clone(),
-        configs.clone(),
-    )
-    .await;
+    // let miner_handle = run_mining_event_processor(
+    //     &context,
+    //     &sender_to_consensus,
+    //     receiver_for_miner,
+    //     stat_timer_in_ms,
+    //     thread_sleep_time_in_ms,
+    //     sender_to_stat.clone(),
+    //     configs.clone(),
+    // )
+    // .await;
 
-    let stat_thread = Box::new(StatThread::new().await);
-    let stat_handle = run_thread(
-        stat_thread,
-        None,
-        Some(receiver_for_stat),
-        stat_timer_in_ms,
-        thread_sleep_time_in_ms,
-    )
-    .await;
+    // let stat_thread = Box::new(StatThread::new().await);
+    // let stat_handle = run_thread(
+    //     stat_thread,
+    //     None,
+    //     Some(receiver_for_stat),
+    //     stat_timer_in_ms,
+    //     thread_sleep_time_in_ms,
+    // )
+    // .await;
 
-    let loop_handle = run_loop_thread(
-        event_receiver_in_loop,
-        network_event_sender_to_routing,
-        stat_timer_in_ms,
-    );
+    // let loop_handle = run_loop_thread(
+    //     event_receiver_in_loop,
+    //     network_event_sender_to_routing,
+    //     stat_timer_in_ms,
+    // );
 
-    let network_handle = tokio::spawn(run_network_controller(
-        receiver_in_network_controller,
-        event_sender_to_loop.clone(),
-        configs_clone.clone(),
-        context.blockchain.clone(),
-        sender_to_stat.clone(),
-        peers.clone(),
-    ));
+    // let network_handle = tokio::spawn(run_network_controller(
+    //     receiver_in_network_controller,
+    //     event_sender_to_loop.clone(),
+    //     configs_clone.clone(),
+    //     context.blockchain.clone(),
+    //     sender_to_stat.clone(),
+    //     peers.clone(),
+    // ));
 
-    let spammer_handle = tokio::spawn(run_spammer(
-        context.wallet.clone(),
-        peers.clone(),
-        context.blockchain.clone(),
-        sender_to_network_controller.clone(),
-        configs.clone(),
-    ));
+    // let spammer_handle = tokio::spawn(run_spammer(
+    //     context.wallet.clone(),
+    //     peers.clone(),
+    //     context.blockchain.clone(),
+    //     sender_to_network_controller.clone(),
+    //     configs.clone(),
+    // ));
 
-    let _result = tokio::join!(
-        routing_handle,
-        blockchain_handle,
-        miner_handle,
-        loop_handle,
-        network_handle,
-        spammer_handle,
-        stat_handle,
-        futures::future::join_all(verification_handles)
-    );
+    // let _result = tokio::join!(
+    //     routing_handle,
+    //     blockchain_handle,
+    //     //miner_handle,
+    //     loop_handle,
+    //     network_handle,
+    //     spammer_handle,
+    //     stat_handle,
+    //     futures::future::join_all(verification_handles)
+    // );
     Ok(())
 }
