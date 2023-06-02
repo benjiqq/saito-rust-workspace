@@ -1,3 +1,4 @@
+#![allow(warnings)]
 use std::collections::VecDeque;
 use std::panic;
 use std::process;
@@ -246,12 +247,13 @@ async fn run_consensus_event_processor(
         create_test_tx = result.unwrap().eq("1");
     }
     let generate_genesis_block: bool;
-    {
-        let (configs, _configs_) = lock_for_read!(context.configuration, LOCK_ORDER_CONFIGS);
+    // {
+    //     let (configs, _configs_) = lock_for_read!(context.configuration, LOCK_ORDER_CONFIGS);
 
-        // if we have peers defined in configs, there's already an existing network. so we don't need to generate the first block.
-        generate_genesis_block = configs.get_peer_configs().is_empty();
-    }
+    //     // if we have peers defined in configs, there's already an existing network. so we don't need to generate the first block.
+    //     generate_genesis_block = configs.get_peer_configs().is_empty();
+    // }
+    generate_genesis_block = false;
 
     let consensus_event_processor = ConsensusThread {
         mempool: context.mempool.clone(),

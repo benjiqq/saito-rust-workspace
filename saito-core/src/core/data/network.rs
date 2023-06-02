@@ -261,6 +261,23 @@ impl Network {
             .await
             .unwrap();
     }
+    pub async fn handle_ping(
+        &self,
+        peer_index: u64,
+        wallet: Arc<RwLock<Wallet>>,
+        configs: Arc<RwLock<dyn Configuration + Send + Sync>>,
+    ) {
+        let (mut peers, _peers_) = lock_for_write!(self.peers, LOCK_ORDER_PEERS);
+
+        let peer = peers.index_to_peers.get_mut(&peer_index);
+        if peer.is_none() {
+            todo!()
+        }
+        let peer = peer.unwrap();
+        peer.handle_ping(&self.io_interface, wallet.clone(), configs)
+            .await
+            .unwrap();
+    }
     pub async fn handle_handshake_response(
         &self,
         peer_index: u64,

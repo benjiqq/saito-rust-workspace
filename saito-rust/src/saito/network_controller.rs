@@ -341,6 +341,7 @@ impl NetworkController {
                         continue;
                     }
                     let result = result.unwrap();
+                    debug!("msg receveid {:?} (Warp)", result);
                     if result.is_err() {
                         // TODO : handle peer disconnections
                         warn!("failed receiving message [1] : {:?}", result.err().unwrap());
@@ -362,14 +363,18 @@ impl NetworkController {
                             event_id: 0,
                             event: NetworkEvent::IncomingNetworkMessage { peer_index, buffer },
                         };
+                        debug!("parsed to ioevent {:?}", message);
                         sender.send(message).await.expect("sending failed");
                     } else if result.is_close() {
                         warn!("connection closed by remote peer : {:?}", peer_index);
                         NetworkController::send_peer_disconnect(sender, peer_index).await;
                         sockets.lock().await.remove(&peer_index);
                         break;
+                    } else if result.is_text() {
+                        println!("hook into send/receive here");
+
                     } else {
-                        todo!("handle these scenarios 1")
+                        todo!("handle these scenarios 1")                        
                     }
                 },
                 PeerReceiver::Tungstenite(mut receiver) => loop {
@@ -378,6 +383,7 @@ impl NetworkController {
                         continue;
                     }
                     let result = result.unwrap();
+                    debug!("msg receveid {:?} (Tungstenite)", result);
                     if result.is_err() {
                         warn!("failed receiving message [2] : {:?}", result.err().unwrap());
                         NetworkController::send_peer_disconnect(sender, peer_index).await;
@@ -488,7 +494,7 @@ pub async fn run_network_controller(
         let mut last_stat_on: Instant = Instant::now();
         loop {
             // let command = Command::NetworkMessage(10, [1, 2, 3].to_vec());
-            //
+            //  
             // sender_to_saito_controller.send(command).await;
             // info!("sending test message to saito controller");
 

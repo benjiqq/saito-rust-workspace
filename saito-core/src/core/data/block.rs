@@ -1876,6 +1876,44 @@ impl Block {
 
         timestamp.to_string() + "-" + hex::encode(block_hash).as_str() + BLOCK_FILE_EXTENSION
     }
+
+    pub fn asReadableString(&self) -> String {
+        let mut s = format!("*** Block - {:?} ***\ntimestamp:   {}\nburnfee:     {}\ndifficulty:  {}\nstreasury:   {}
+                            *** transactions ***\n",
+                            self.id,
+                            self.timestamp,                            
+                            self.burnfee,
+                            self.difficulty,
+                            self.staking_treasury);
+
+        
+        // for transaction in &self.transactions {
+        //     // If Transaction has a method as_readable_string
+        //     s.push_str(&transaction.as_readable_string());
+        //     s.push('\n');
+        // }
+        s
+    }
+
+    // asReadableString() {
+    //     let html = "";
+    //     html += `
+    //  Block ${this.block.id} - ${this.returnHash()}
+    //    timestamp:   ${this.block.timestamp}
+    //    prevblock:   ${this.block.previous_block_hash}
+    //    merkle:      ${this.block.merkle}
+    //    burnfee:     ${this.block.burnfee.toString()}
+    //    difficulty:  ${this.block.difficulty}
+    //    streasury:   ${this.block.staking_treasury.toString()}
+    //    *** transactions ***
+    // `;
+    //     for (let i = 0; i < this.transactions.length; i++) {
+    //       html += this.transactions[i].asReadableString();
+    //       html += "\n";
+    //     }
+    //     return html;
+    //   }
+    
 }
 
 #[cfg(test)]

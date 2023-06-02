@@ -243,7 +243,7 @@ impl Mempool {
         // TODO : add checks [downloading_active,etc...] from SLR code here
 
         if blockchain.blocks.is_empty() {
-            warn!("Not generating #1 block. Waiting for blocks from peers");
+            //trace!("Not generating #1 block. Waiting for blocks from peers");
             return None;
         }
         if !self.blocks_queue.is_empty() {

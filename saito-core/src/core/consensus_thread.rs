@@ -185,7 +185,7 @@ impl ConsensusThread {
         {
             if latest_block_id == 0 {
                 let mut vip_transaction =
-                    Transaction::create_vip_transaction(public_key, 50_000_000);
+                    Transaction::create_vip_transaction(public_key, 80_000_000);
                 vip_transaction.sign(&private_key);
 
                 mempool
@@ -193,7 +193,7 @@ impl ConsensusThread {
                     .await;
 
                 let mut vip_transaction =
-                    Transaction::create_vip_transaction(spammer_public_key, 50_000_000);
+                    Transaction::create_vip_transaction(spammer_public_key, 40_000_000);
                 vip_transaction.sign(&private_key);
 
                 mempool
@@ -235,7 +235,9 @@ impl ProcessEvent<ConsensusEvent> for ConsensusThread {
         let timestamp = self.time_keeper.get_timestamp_in_ms();
         let duration_value = duration.as_millis() as u64;
 
+       
         if self.generate_genesis_block {
+            println!("generate_genesis_block.....");
             Self::generate_spammer_init_tx(
                 self.mempool.clone(),
                 self.wallet.clone(),
@@ -373,7 +375,11 @@ impl ProcessEvent<ConsensusEvent> for ConsensusThread {
                         .unwrap();
                 }
 
-                debug!("blocks added to blockchain");
+                debug!("blocks added to blockchain {}" ,updated);
+
+                debug!(">>>>> print some block info ....");
+                debug!("last_timestamp: {:?}", blockchain.last_timestamp);
+                debug!("last_block_id: {:?}", blockchain.last_block_id);
 
                 work_done = true;
             } else {
@@ -515,7 +521,16 @@ impl ProcessEvent<ConsensusEvent> for ConsensusThread {
     }
 
     async fn on_init(&mut self) {
-        debug!("on_init");
+        debug!("init consensus");
+        
+        // let custom_genesis_block= true;
+        // if custom_genesis_block {
+        //     debug!("custom genesis");
+
+        // }
+        self.generate_genesis_block = true;
+
+
         self.storage
             .load_blocks_from_disk(self.mempool.clone())
             .await;

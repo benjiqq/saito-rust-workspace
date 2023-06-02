@@ -163,7 +163,26 @@ impl RoutingThread {
                 self.process_incoming_block_hash(hash, prev_hash, peer_index)
                     .await;
             }
-            Message::Ping() => {}
+            Message::Ping() => {
+                debug!("received ping");
+                self.network
+                    .handle_ping(
+                        peer_index,
+                        self.wallet.clone(),
+                        self.configs.clone(),
+                    )
+                    .await;
+            }
+            Message::Pong() => {
+                debug!("received pong");
+                // self.network
+                //     .handle_ping(
+                //         peer_index,
+                //         self.wallet.clone(),
+                //         self.configs.clone(),
+                //     )
+                //     .await;
+            }
             Message::SPVChain() => {}
             Message::Services(services) => {
                 self.process_peer_services(services, peer_index).await;

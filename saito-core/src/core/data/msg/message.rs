@@ -1,6 +1,6 @@
 use std::io::{Error, ErrorKind};
 
-use log::{error, trace, warn};
+use log::{error, trace, warn, debug};
 
 use crate::common::defs::SaitoHash;
 use crate::core::data::block::{Block, BlockType};
@@ -21,6 +21,7 @@ pub enum Message {
     BlockchainRequest(BlockchainRequest),
     BlockHeaderHash(SaitoHash, u64),
     Ping(),
+    Pong(),
     SPVChain(),
     Services(Vec<PeerService>),
     GhostChain(GhostChainSync),
@@ -57,6 +58,9 @@ impl Message {
             Message::Ping() => {
                 vec![]
             }
+            Message::Pong() => {
+                vec![]
+            }
             Message::Services(services) => PeerService::serialize_services(services),
             Message::Result(data) => data.serialize(),
             Message::Error(data) => data.serialize(),
@@ -72,7 +76,7 @@ impl Message {
         let message_type: u8 = u8::from_be_bytes(buffer[0..1].try_into().unwrap());
         let buffer = buffer[1..].to_vec();
 
-        trace!(
+        debug!(
             "deserializing buffer size = {:?} of type = {:?}",
             buffer.len(),
             message_type
@@ -106,7 +110,10 @@ impl Message {
                 let block_id = u64::from_be_bytes(buffer[32..40].to_vec().try_into().unwrap());
                 Ok(Message::BlockHeaderHash(block_hash, block_id))
             }
-            7 => Ok(Message::Ping()),
+            7 => {
+                debug!("ping message");
+                Ok(Message::Ping())
+            }
             8 => Ok(Message::SPVChain()),
             9 => {
                 let services = PeerService::deserialize_services(buffer).unwrap();
@@ -131,6 +138,10 @@ impl Message {
                 let result = ApiMessage::deserialize(&buffer);
                 Ok(Message::Error(result))
             }
+            15 => {
+                debug!("pong message");
+                Ok(Message::Pong())
+            }
             // 16 => Ok(Message::ApplicationTransaction(buffer)),
             _ => {
                 warn!("message type : {:?} not valid", message_type);
@@ -154,6 +165,7 @@ impl Message {
             Message::ApplicationMessage(_) => 12,
             Message::Result(_) => 13,
             Message::Error(_) => 14,
+            Message::Pong() => 15,
             // Message::ApplicationTransaction(_) => 16,
         }
     }

@@ -1,0 +1,183 @@
+Running saito
+[2m2023-06-02T10:26:01.558851Z[0m [32m INFO[0m [2msaito_rust[0m[2m:[0m Using config file: configs/config.json    
+[2m2023-06-02T10:26:01.559116Z[0m [34mDEBUG[0m [2msaito_rust::saito::config_handler[0m[2m:[0m loading configurations from path : "configs/config.json" current_dir = Ok("/Users/ben/projects/saito/workspace/saito-rust-workspace/saito-rust")    
+[2m2023-06-02T10:26:01.560717Z[0m [32m INFO[0m [2msaito_rust[0m[2m:[0m running saito controllers    
+[2m2023-06-02T10:26:01.561582Z[0m [32m INFO[0m [2msaito_core::core::data::wallet[0m[2m:[0m generating new wallet...    
+[2m2023-06-02T10:26:01.561721Z[0m [32m INFO[0m [2msaito_core::core::data::wallet[0m[2m:[0m loading wallet...    
+[2m2023-06-02T10:26:01.561819Z[0m [32m INFO[0m [2msaito_core::core::data::wallet[0m[2m:[0m wallet loaded    
+[2m2023-06-02T10:26:01.571535Z[0m [32m INFO[0m [2msaito_rust[0m[2m:[0m verification thread started    
+[2m2023-06-02T10:26:01.571541Z[0m [32m INFO[0m [2msaito_rust[0m[2m:[0m verification thread started    
+[2m2023-06-02T10:26:01.571541Z[0m [32m INFO[0m [2msaito_rust[0m[2m:[0m verification thread started    
+[2m2023-06-02T10:26:01.571579Z[0m [32m INFO[0m [2msaito_rust[0m[2m:[0m verification thread started    
+[2m2023-06-02T10:26:01.571588Z[0m [34mDEBUG[0m [2msaito_rust[0m[2m:[0m running blockchain thread    
+[2m2023-06-02T10:26:01.571664Z[0m [34mDEBUG[0m [2msaito_rust[0m[2m:[0m running mempool thread    
+[2m2023-06-02T10:26:01.571705Z[0m [32m INFO[0m [2msaito_rust[0m[2m:[0m new thread started    
+[2m2023-06-02T10:26:01.571731Z[0m [34mDEBUG[0m [2msaito_rust[0m[2m:[0m running miner thread    
+[2m2023-06-02T10:26:01.571825Z[0m [32m INFO[0m [2msaito_rust[0m[2m:[0m new thread started    
+[2m2023-06-02T10:26:01.571830Z[0m [32m INFO[0m [2msaito_rust[0m[2m:[0m new thread started    
+[2m2023-06-02T10:26:01.571879Z[0m [32m INFO[0m [2msaito_core::core::mining_thread[0m[2m:[0m node public key = "0289af4a30e9aeb92ad565b8b2d7611981329f3bfae4f95c535dc0a61171e33f0f"    
+[2m2023-06-02T10:26:01.571961Z[0m [34mDEBUG[0m [2msaito_core::core::consensus_thread[0m[2m:[0m init consensus    
+[2m2023-06-02T10:26:01.571981Z[0m [32m INFO[0m [2msaito_core::core::data::storage[0m[2m:[0m loading blocks from disk    
+[2m2023-06-02T10:26:01.572003Z[0m [34mDEBUG[0m [2msaito_rust::saito::rust_io_handler[0m[2m:[0m loading blocks from dir : "./data/blocks/"    
+[2m2023-06-02T10:26:01.572064Z[0m [32m INFO[0m [2msaito_rust[0m[2m:[0m new thread started    
+[2m2023-06-02T10:26:01.572134Z[0m [32m INFO[0m [2msaito_rust::saito::network_controller[0m[2m:[0m running network handler    
+[2m2023-06-02T10:26:01.572180Z[0m [32m INFO[0m [2msaito_rust::saito::network_controller[0m[2m:[0m starting server on : "127.0.0.1:12101"    
+[2m2023-06-02T10:26:01.572206Z[0m [32m INFO[0m [2msaito_rust::saito::network_controller[0m[2m:[0m running websocket server on 12101    
+[2m2023-06-02T10:26:01.572350Z[0m [34mDEBUG[0m [2msaito_core::core::data::storage[0m[2m:[0m block file names : ["1685700287129-262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c.sai", "1685701364218-7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50.sai", "1685701500988-fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340.sai"]    
+[2m2023-06-02T10:26:01.572378Z[0m [32m INFO[0m [2msaito_core::core::data::storage[0m[2m:[0m loading file : "1685700287129-262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c.sai"    
+[2m2023-06-02T10:26:01.572561Z[0m [32m INFO[0m [2msaito_rust::saito::network_controller[0m[2m:[0m starting websocket server    
+[2m2023-06-02T10:26:01.572946Z[0m [32m INFO[0m [2msaito_core::core::data::storage[0m[2m:[0m file : "1685700287129-262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c.sai" loaded    
+[2m2023-06-02T10:26:01.573047Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m block.deserialize tx length = 1    
+[2m2023-06-02T10:26:01.573176Z[0m [32m INFO[0m [1mServer::run[0m[1m{[0m[3maddr[0m[2m=[0m127.0.0.1:12101[1m}[0m[2m:[0m [2mwarp::server[0m[2m:[0m listening on http://127.0.0.1:12101
+[2m2023-06-02T10:26:01.573394Z[0m [32m INFO[0m [2msaito_core::core::data::storage[0m[2m:[0m block : "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c" loaded from disk    
+[2m2023-06-02T10:26:01.573419Z[0m [34mDEBUG[0m [2msaito_core::core::data::mempool[0m[2m:[0m mempool add block : "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c"    
+[2m2023-06-02T10:26:01.573769Z[0m [32m INFO[0m [2msaito_core::core::data::storage[0m[2m:[0m loading file : "1685701364218-7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50.sai"    
+[2m2023-06-02T10:26:01.574198Z[0m [32m INFO[0m [2msaito_core::core::data::storage[0m[2m:[0m file : "1685701364218-7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50.sai" loaded    
+[2m2023-06-02T10:26:01.574234Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m block.deserialize tx length = 3    
+[2m2023-06-02T10:26:01.574331Z[0m [32m INFO[0m [2msaito_core::core::data::storage[0m[2m:[0m block : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50" loaded from disk    
+[2m2023-06-02T10:26:01.574348Z[0m [34mDEBUG[0m [2msaito_core::core::data::mempool[0m[2m:[0m mempool add block : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50"    
+[2m2023-06-02T10:26:01.574364Z[0m [32m INFO[0m [2msaito_core::core::data::storage[0m[2m:[0m loading file : "1685701500988-fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340.sai"    
+[2m2023-06-02T10:26:01.574771Z[0m [32m INFO[0m [2msaito_core::core::data::storage[0m[2m:[0m file : "1685701500988-fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340.sai" loaded    
+[2m2023-06-02T10:26:01.574800Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m block.deserialize tx length = 3    
+[2m2023-06-02T10:26:01.574871Z[0m [32m INFO[0m [2msaito_core::core::data::storage[0m[2m:[0m block : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340" loaded from disk    
+[2m2023-06-02T10:26:01.574888Z[0m [34mDEBUG[0m [2msaito_core::core::data::mempool[0m[2m:[0m mempool add block : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340"    
+[2m2023-06-02T10:26:01.574905Z[0m [32m INFO[0m [2msaito_core::core::data::storage[0m[2m:[0m loading blocks to mempool completed    
+[2m2023-06-02T10:26:01.574947Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m adding blocks from mempool to blockchain    
+[2m2023-06-02T10:26:01.574963Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m blocks to add : 3    
+[2m2023-06-02T10:26:01.575002Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m add_block "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c" with id : 1 with latest id : 0 with tx count : 1    
+[2m2023-06-02T10:26:01.575022Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m previous block : "0000000000000000000000000000000000000000000000000000000000000000" exists in blockchain    
+[2m2023-06-02T10:26:01.575056Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m block without parent. block : "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c", latest : "0000000000000000000000000000000000000000000000000000000000000000"    
+[2m2023-06-02T10:26:01.575070Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m checking for longest chain    
+[2m2023-06-02T10:26:01.575080Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m this is the longest chain    
+[2m2023-06-02T10:26:01.575092Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m validating chains    
+[2m2023-06-02T10:26:01.575129Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m upgrading block : "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c" to type : Full    
+[2m2023-06-02T10:26:01.575740Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m generate consensus values    
+[2m2023-06-02T10:26:01.575787Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m block : on chain reorg : 1 - "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c"    
+[2m2023-06-02T10:26:01.575810Z[0m [34mDEBUG[0m [2msaito_core::core::data::slip[0m[2m:[0m updating slip : "03145c7e7644ab277482ba8801a515b8f1b62bcd7e4834a33258f438cd7e22384900000000000000010000000000000000000000000005f5e100" as spendable : true, block : 1 tx : 0 index : 0    
+[2m2023-06-02T10:26:01.575838Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m add_block_success : "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c"    
+[2m2023-06-02T10:26:01.575854Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m ------------------------------------------------------    
+[2m2023-06-02T10:26:01.575872Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m 1 - "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c"    
+[2m2023-06-02T10:26:01.575887Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m ------------------------------------------------------    
+[2m2023-06-02T10:26:01.575944Z[0m [34mDEBUG[0m [2msaito_rust::saito::rust_io_handler[0m[2m:[0m writing value to disk : "./data/blocks/1685700287129-262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c.sai"    
+[2m2023-06-02T10:26:01.576289Z[0m [34mDEBUG[0m [2msaito_core::core::data::network[0m[2m:[0m propagating block : "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c"    
+[2m2023-06-02T10:26:01.576315Z[0m [34mDEBUG[0m [2msaito_core::core::data::network[0m[2m:[0m sending block : "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c" to peers    
+[2m2023-06-02T10:26:01.576333Z[0m [34mDEBUG[0m [2msaito_rust::saito::rust_io_handler[0m[2m:[0m send message to all    
+[2m2023-06-02T10:26:01.576390Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m block "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c" added successfully    
+[2m2023-06-02T10:26:01.576408Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m sending longest chain block added event to miner : hash : "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c" difficulty : 1    
+[2m2023-06-02T10:26:01.576518Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m add_block "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50" with id : 2 with latest id : 1 with tx count : 3    
+[2m2023-06-02T10:26:01.576538Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m previous block : "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c" exists in blockchain    
+[2m2023-06-02T10:26:01.576560Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m shared ancestor found    
+[2m2023-06-02T10:26:01.576572Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m checking for longest chain    
+[2m2023-06-02T10:26:01.576584Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m this is the longest chain    
+[2m2023-06-02T10:26:01.576596Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m validating chains    
+[2m2023-06-02T10:26:01.576615Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m upgrading block : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50" to type : Full    
+[2m2023-06-02T10:26:01.576633Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m upgrading block : "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c" to type : Full    
+[2m2023-06-02T10:26:01.577069Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m generate consensus values    
+[2m2023-06-02T10:26:01.577676Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m block : on chain reorg : 2 - "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50"    
+[2m2023-06-02T10:26:01.577700Z[0m [34mDEBUG[0m [2msaito_core::core::data::slip[0m[2m:[0m updating slip : "03145c7e7644ab277482ba8801a515b8f1b62bcd7e4834a33258f438cd7e22384900000000000000020000000000000001000000000005f5e100" as spendable : true, block : 2 tx : 1 index : 0    
+[2m2023-06-02T10:26:01.577725Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m add_block_success : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50"    
+[2m2023-06-02T10:26:01.577741Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m ------------------------------------------------------    
+[2m2023-06-02T10:26:01.577759Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m 2 - "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50"    
+[2m2023-06-02T10:26:01.577778Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m 1 - "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c"    
+[2m2023-06-02T10:26:01.577793Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m ------------------------------------------------------    
+[2m2023-06-02T10:26:01.577846Z[0m [34mDEBUG[0m [2msaito_rust::saito::rust_io_handler[0m[2m:[0m writing value to disk : "./data/blocks/1685701364218-7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50.sai"    
+[2m2023-06-02T10:26:01.577998Z[0m [34mDEBUG[0m [2msaito_core::core::data::network[0m[2m:[0m propagating block : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50"    
+[2m2023-06-02T10:26:01.578019Z[0m [34mDEBUG[0m [2msaito_core::core::data::network[0m[2m:[0m sending block : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50" to peers    
+[2m2023-06-02T10:26:01.578036Z[0m [34mDEBUG[0m [2msaito_rust::saito::rust_io_handler[0m[2m:[0m send message to all    
+[2m2023-06-02T10:26:01.578061Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m block "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50" added successfully    
+[2m2023-06-02T10:26:01.578080Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m sending longest chain block added event to miner : hash : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50" difficulty : 1    
+[2m2023-06-02T10:26:01.578157Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m add_block "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340" with id : 3 with latest id : 2 with tx count : 3    
+[2m2023-06-02T10:26:01.578174Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m previous block : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50" exists in blockchain    
+[2m2023-06-02T10:26:01.578190Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m shared ancestor found    
+[2m2023-06-02T10:26:01.578200Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m checking for longest chain    
+[2m2023-06-02T10:26:01.578212Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m this is the longest chain    
+[2m2023-06-02T10:26:01.578222Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m validating chains    
+[2m2023-06-02T10:26:01.578239Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m upgrading block : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340" to type : Full    
+[2m2023-06-02T10:26:01.578255Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m upgrading block : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50" to type : Full    
+[2m2023-06-02T10:26:01.578271Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m upgrading block : "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c" to type : Full    
+[2m2023-06-02T10:26:01.578688Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m generate consensus values    
+[2m2023-06-02T10:26:01.579209Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m block : on chain reorg : 3 - "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340"    
+[2m2023-06-02T10:26:01.579232Z[0m [34mDEBUG[0m [2msaito_core::core::data::slip[0m[2m:[0m updating slip : "03145c7e7644ab277482ba8801a515b8f1b62bcd7e4834a33258f438cd7e22384900000000000000030000000000000001000000000005f5e100" as spendable : true, block : 3 tx : 1 index : 0    
+[2m2023-06-02T10:26:01.579257Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m add_block_success : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340"    
+[2m2023-06-02T10:26:01.579272Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m ------------------------------------------------------    
+[2m2023-06-02T10:26:01.579290Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m 3 - "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340"    
+[2m2023-06-02T10:26:01.579309Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m 2 - "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50"    
+[2m2023-06-02T10:26:01.579328Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m 1 - "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c"    
+[2m2023-06-02T10:26:01.579342Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m ------------------------------------------------------    
+[2m2023-06-02T10:26:01.579392Z[0m [34mDEBUG[0m [2msaito_rust::saito::rust_io_handler[0m[2m:[0m writing value to disk : "./data/blocks/1685701500988-fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340.sai"    
+[2m2023-06-02T10:26:01.579518Z[0m [34mDEBUG[0m [2msaito_core::core::data::network[0m[2m:[0m propagating block : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340"    
+[2m2023-06-02T10:26:01.579539Z[0m [34mDEBUG[0m [2msaito_core::core::data::network[0m[2m:[0m sending block : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340" to peers    
+[2m2023-06-02T10:26:01.579556Z[0m [34mDEBUG[0m [2msaito_rust::saito::rust_io_handler[0m[2m:[0m send message to all    
+[2m2023-06-02T10:26:01.579580Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m block "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340" added successfully    
+[2m2023-06-02T10:26:01.579599Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m sending longest chain block added event to miner : hash : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340" difficulty : 2    
+[2m2023-06-02T10:26:01.579617Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m added blocks to blockchain. added back : 0    
+generate_genesis_block.....
+[2m2023-06-02T10:26:01.579654Z[0m [32m INFO[0m [2msaito_core::core::consensus_thread[0m[2m:[0m generating spammer init transaction    
+[2m2023-06-02T10:26:01.579685Z[0m [34mDEBUG[0m [2msaito_core::core::data::transaction[0m[2m:[0m generate vip transaction : amount = 100000000    
+[2m2023-06-02T10:26:01.579909Z[0m [34mDEBUG[0m [2msaito_core::core::data::mempool[0m[2m:[0m routing work available in mempool : 0 after adding work : 0 from tx with fees : 0    
+[2m2023-06-02T10:26:01.579928Z[0m [32m INFO[0m [2msaito_core::core::consensus_thread[0m[2m:[0m added spammer init tx for : "03145c7e7644ab277482ba8801a515b8f1b62bcd7e4834a33258f438cd7e223849"    
+[2m2023-06-02T10:26:01.583829Z[0m [32m INFO[0m [2msaito_core::core::mining_thread[0m[2m:[0m Activating miner with hash : "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c" and difficulty : 1    
+[2m2023-06-02T10:26:01.583939Z[0m [32m INFO[0m [2msaito_core::core::mining_thread[0m[2m:[0m Activating miner with hash : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50" and difficulty : 1    
+[2m2023-06-02T10:26:01.583996Z[0m [32m INFO[0m [2msaito_core::core::mining_thread[0m[2m:[0m golden ticket found. sending to mempool. previous block : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50" random : "8c80ea3cd517b649386a136f51b9e3693e12a777f4a355e57f991a27c28ed497" key : "0289af4a30e9aeb92ad565b8b2d7611981329f3bfae4f95c535dc0a61171e33f0f" solution : "47d678584b0137fd6972a7a45afb0ee1910cb6eef5af81ba6534ac8b7bb11da5" for difficulty : 1    
+[2m2023-06-02T10:26:01.584027Z[0m [32m INFO[0m [2msaito_core::core::mining_thread[0m[2m:[0m Activating miner with hash : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340" and difficulty : 2    
+[2m2023-06-02T10:26:01.584110Z[0m [32m INFO[0m [2msaito_core::core::mining_thread[0m[2m:[0m golden ticket found. sending to mempool. previous block : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340" random : "74cee096821bc05a08c278a97fa65c7fc7082364c339d5dd7919e17fb649f19b" key : "0289af4a30e9aeb92ad565b8b2d7611981329f3bfae4f95c535dc0a61171e33f0f" solution : "0bcc1cd03080ccb6bd9d88d727b0f9a1d64b9f607daebcc220ae9f61e9f68799" for difficulty : 2    
+[2m2023-06-02T10:26:01.591783Z[0m [34mDEBUG[0m [2msaito_core::core::consensus_thread[0m[2m:[0m received new golden ticket : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50"    
+[2m2023-06-02T10:26:01.592137Z[0m [32m INFO[0m [2msaito_core::core::data::mempool[0m[2m:[0m adding golden ticket : "0b0fdcb531303567284ec4b7bb27f2d8e9c4700f3cde26abeebaae7d27d02989" target : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50" public_key : "0289af4a30e9aeb92ad565b8b2d7611981329f3bfae4f95c535dc0a61171e33f0f"    
+[2m2023-06-02T10:26:01.592158Z[0m [32m INFO[0m [2msaito_core::core::data::mempool[0m[2m:[0m golden ticket added to mempool    
+[2m2023-06-02T10:26:01.592181Z[0m [34mDEBUG[0m [2msaito_core::core::consensus_thread[0m[2m:[0m received new golden ticket : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340"    
+[2m2023-06-02T10:26:01.592503Z[0m [32m INFO[0m [2msaito_core::core::data::mempool[0m[2m:[0m adding golden ticket : "84568dc0ba9db1327a5d7d71651a4c80cb41f9f567f893db8dc306d5b7051016" target : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340" public_key : "0289af4a30e9aeb92ad565b8b2d7611981329f3bfae4f95c535dc0a61171e33f0f"    
+[2m2023-06-02T10:26:01.592522Z[0m [32m INFO[0m [2msaito_core::core::data::mempool[0m[2m:[0m golden ticket added to mempool    
+[2m2023-06-02T10:26:01.688764Z[0m [32m INFO[0m [2msaito_core::core::data::mempool[0m[2m:[0m last ts: 1685701500988, this ts: 1685701561688, work available: 0, work needed: 0, time_elapsed : 60700 can_bundle : true    
+[2m2023-06-02T10:26:01.688799Z[0m [32m INFO[0m [2msaito_core::core::data::mempool[0m[2m:[0m bundling block with 1 txs with work : 0    
+[2m2023-06-02T10:26:01.688842Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m Block::create : previous block hash : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340"    
+[2m2023-06-02T10:26:01.688877Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m golden ticket found. adding to block.    
+[2m2023-06-02T10:26:01.688932Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m generate consensus values    
+[2m2023-06-02T10:26:01.689501Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m generating the merkle root 1    
+[2m2023-06-02T10:26:01.689528Z[0m [34mDEBUG[0m [2msaito_core::core::data::merkle[0m[2m:[0m Generating merkle tree    
+[2m2023-06-02T10:26:01.689768Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m generated the merkle root, Tx Count: 3, root = "4b08e13202aa9dcf0eba50426f8407fffd25a1fae71e688ca6e9660ab8a16ce7"    
+[2m2023-06-02T10:26:01.690528Z[0m [32m INFO[0m [2msaito_core::core::data::mempool[0m[2m:[0m block generated with work : 0 and burnfee : 186943    
+[2m2023-06-02T10:26:01.690568Z[0m [32m INFO[0m [2msaito_core::core::consensus_thread[0m[2m:[0m adding bundled block : "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603" with id : 4 to mempool    
+[2m2023-06-02T10:26:01.690605Z[0m [34mDEBUG[0m [2msaito_core::core::data::mempool[0m[2m:[0m mempool add block : "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603"    
+[2m2023-06-02T10:26:01.690647Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m adding blocks from mempool to blockchain    
+[2m2023-06-02T10:26:01.690682Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m blocks to add : 1    
+[2m2023-06-02T10:26:01.690830Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m add_block "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603" with id : 4 with latest id : 3 with tx count : 3    
+[2m2023-06-02T10:26:01.690871Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m previous block : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340" exists in blockchain    
+[2m2023-06-02T10:26:01.690919Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m shared ancestor found    
+[2m2023-06-02T10:26:01.690944Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m checking for longest chain    
+[2m2023-06-02T10:26:01.690972Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m this is the longest chain    
+[2m2023-06-02T10:26:01.690998Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m validating chains    
+[2m2023-06-02T10:26:01.691040Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m upgrading block : "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603" to type : Full    
+[2m2023-06-02T10:26:01.691078Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m upgrading block : "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340" to type : Full    
+[2m2023-06-02T10:26:01.691115Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m upgrading block : "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50" to type : Full    
+[2m2023-06-02T10:26:01.691921Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m generate consensus values    
+[2m2023-06-02T10:26:01.692850Z[0m [34mDEBUG[0m [2msaito_core::core::data::block[0m[2m:[0m block : on chain reorg : 4 - "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603"    
+[2m2023-06-02T10:26:01.692894Z[0m [34mDEBUG[0m [2msaito_core::core::data::slip[0m[2m:[0m updating slip : "03145c7e7644ab277482ba8801a515b8f1b62bcd7e4834a33258f438cd7e22384900000000000000040000000000000001000000000005f5e100" as spendable : true, block : 4 tx : 1 index : 0    
+[2m2023-06-02T10:26:01.692945Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m add_block_success : "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603"    
+[2m2023-06-02T10:26:01.692972Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m ------------------------------------------------------    
+[2m2023-06-02T10:26:01.693004Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m 4 - "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603"    
+[2m2023-06-02T10:26:01.693039Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m 3 - "fdc935ae14304bed2145220cf38f506c11e813c2641c9436d981441e48c5b340"    
+[2m2023-06-02T10:26:01.693074Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m 2 - "7cc8c4c3579e34f7db9efa187c1186dbb4523074b872d15eedd12e815f79fe50"    
+[2m2023-06-02T10:26:01.693109Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m 1 - "262e75fdb716a9b7af75d98ae7bd86a600fc15f8ead4cfaf18613a700630f32c"    
+[2m2023-06-02T10:26:01.693136Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m ------------------------------------------------------    
+[2m2023-06-02T10:26:01.693235Z[0m [34mDEBUG[0m [2msaito_rust::saito::rust_io_handler[0m[2m:[0m writing value to disk : "./data/blocks/1685701561688-9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603.sai"    
+[2m2023-06-02T10:26:01.693626Z[0m [34mDEBUG[0m [2msaito_core::core::data::network[0m[2m:[0m propagating block : "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603"    
+[2m2023-06-02T10:26:01.693667Z[0m [34mDEBUG[0m [2msaito_core::core::data::network[0m[2m:[0m sending block : "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603" to peers    
+[2m2023-06-02T10:26:01.693701Z[0m [34mDEBUG[0m [2msaito_rust::saito::rust_io_handler[0m[2m:[0m send message to all    
+[2m2023-06-02T10:26:01.693762Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m block "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603" added successfully    
+[2m2023-06-02T10:26:01.693801Z[0m [32m INFO[0m [2msaito_core::core::data::blockchain[0m[2m:[0m sending longest chain block added event to miner : hash : "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603" difficulty : 3    
+[2m2023-06-02T10:26:01.693838Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain[0m[2m:[0m added blocks to blockchain. added back : 0    
+[2m2023-06-02T10:26:01.693870Z[0m [34mDEBUG[0m [2msaito_core::core::consensus_thread[0m[2m:[0m blocks added to blockchain true    
+[2m2023-06-02T10:26:01.693895Z[0m [34mDEBUG[0m [2msaito_core::core::consensus_thread[0m[2m:[0m >>>>> print some block info ....    
+[2m2023-06-02T10:26:01.693919Z[0m [34mDEBUG[0m [2msaito_core::core::consensus_thread[0m[2m:[0m last_timestamp: 0    
+[2m2023-06-02T10:26:01.693942Z[0m [34mDEBUG[0m [2msaito_core::core::consensus_thread[0m[2m:[0m last_block_id: 0    
+[2m2023-06-02T10:26:01.700840Z[0m [32m INFO[0m [2msaito_core::core::mining_thread[0m[2m:[0m Activating miner with hash : "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603" and difficulty : 3    
+[2m2023-06-02T10:26:01.700849Z[0m [34mDEBUG[0m [2msaito_core::core::routing_thread[0m[2m:[0m received blockchain update event    
+[2m2023-06-02T10:26:01.700906Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain_sync_state[0m[2m:[0m setting latest blockchain id : 4 and ceiling : 14    
+[2m2023-06-02T10:26:01.700932Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain_sync_state[0m[2m:[0m building peer block picture    
+[2m2023-06-02T10:26:01.700958Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain_sync_state[0m[2m:[0m requesting blocks from waiting list    
+[2m2023-06-02T10:26:01.700989Z[0m [34mDEBUG[0m [2msaito_core::core::data::blockchain_sync_state[0m[2m:[0m marking as fetching : 0    
+[2m2023-06-02T10:26:01.701040Z[0m [32m INFO[0m [2msaito_core::core::mining_thread[0m[2m:[0m golden ticket found. sending to mempool. previous block : "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603" random : "7c5a28c8dae04b4293e4db8164c8386a7f8c9e0d0504df613974606538ad4f77" key : "0289af4a30e9aeb92ad565b8b2d7611981329f3bfae4f95c535dc0a61171e33f0f" solution : "09ef42b6e7cc7354bb27caf49d11395e86abf817f5da1a9d98a81a83acd3b54a" for difficulty : 3    
+[2m2023-06-02T10:26:01.705436Z[0m [34mDEBUG[0m [2msaito_core::core::consensus_thread[0m[2m:[0m received new golden ticket : "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603"    
+[2m2023-06-02T10:26:01.706089Z[0m [32m INFO[0m [2msaito_core::core::data::mempool[0m[2m:[0m adding golden ticket : "a16e10d6b90c759fd9261543465f7ca5ca789109cda1327d2b9c021e8a29fade" target : "9a581878ed7bec643d8e47cfa6fb7b2f45c66d8655aab53d83f2805981cfa603" public_key : "0289af4a30e9aeb92ad565b8b2d7611981329f3bfae4f95c535dc0a61171e33f0f"    
+[2m2023-06-02T10:26:01.706127Z[0m [32m INFO[0m [2msaito_core::core::data::mempool[0m[2m:[0m golden ticket added to mempool    
+[2m2023-06-02T10:26:01.797006Z[0m [34mDEBUG[0m [2msaito_core::core::consensus_thread[0m[2m:[0m propagating gt : "a16e10d6b90c759fd9261543465f7ca5ca789109cda1327d2b9c021e8a29fade" to peers    

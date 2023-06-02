@@ -60,6 +60,32 @@ impl Peer {
 
         Ok(())
     }
+    pub async fn handle_ping(
+        &mut self,        
+        io_handler: &Box<dyn InterfaceIO + Send + Sync>,
+        wallet: Arc<RwLock<Wallet>>,
+        configs: Arc<RwLock<dyn Configuration + Send + Sync>>,
+    ) -> Result<(), Error> {
+        info!("CUSTOM ping handler : {:?}", self.index,);
+       
+        // let response = HandshakeResponse {
+        //     public_key: wallet.public_key,
+        //     signature: sign(challenge.challenge.as_slice(), &wallet.private_key),
+        //     challenge: generate_random_bytes(32).try_into().unwrap(),
+        //     is_lite,
+        //     block_fetch_url,
+        //     services: io_handler.get_my_services(),
+        // };
+
+        //self.challenge_for_peer = Some(response.challenge);
+        io_handler
+            .send_message(self.index, Message::Pong().serialize())
+            .await
+            .unwrap();
+        info!("PING response sent for peer: {:?}", self.index);
+
+        Ok(())
+    }
     pub async fn handle_handshake_challenge(
         &mut self,
         challenge: HandshakeChallenge,
