@@ -30,6 +30,7 @@ use crate::{lock_for_read, lock_for_write};
 
 pub const BLOCK_PRODUCING_TIMER: u64 = Duration::from_millis(100).as_millis() as u64;
 pub const SPAM_TX_PRODUCING_TIMER: u64 = Duration::from_millis(1_000).as_millis() as u64;
+pub const REPORT_TIMER: u64 = Duration::from_millis(1_000).as_millis() as u64;
 
 #[derive(Debug)]
 pub enum ConsensusEvent {
@@ -83,6 +84,7 @@ pub struct ConsensusThread {
     pub sender_to_miner: Sender<MiningEvent>,
     pub block_producing_timer: u64,
     pub tx_producing_timer: u64,
+    pub report_timer: u64,  // temp
     pub create_test_tx: bool,
     pub time_keeper: Box<dyn KeepTime + Send + Sync>,
     pub network: Network,
@@ -91,6 +93,7 @@ pub struct ConsensusThread {
     pub txs_for_mempool: Vec<Transaction>,
     pub stat_sender: Sender<String>,
     pub configs: Arc<RwLock<dyn Configuration + Send + Sync>>,
+    
 }
 
 impl ConsensusThread {
@@ -398,6 +401,31 @@ impl ProcessEvent<ConsensusEvent> for ConsensusThread {
                 }
             }
         }
+
+        //period report
+        if self.report_timer >= REPORT_TIMER {
+            debug!("report_timer trigger!! {}", self.report_timer);
+            self.report_timer = 0;
+            debug!("self.stats.blocks_created {:?} ", self.stats.blocks_created.total);
+            let (mut blockchain, _blockchain_) =
+            lock_for_write!(self.blockchain, LOCK_ORDER_BLOCKCHAIN);
+            debug!("last_block_id: {:?} ", blockchain.last_timestamp);
+            //         pub utxoset: UtxoSet,
+            // pub blockring: BlockRing,
+            // pub blocks: AHashMap<SaitoHash, Block>,
+            // pub wallet_lock: Arc<RwLock<Wallet>>,
+            // pub genesis_block_id: u64,
+            // pub fork_id: SaitoHash,
+            // pub last_block_hash: SaitoHash,
+            // pub last_block_id: u64,
+            // pub last_timestamp: u64,
+            // pub last_burnfee: Currency,
+
+            //debug!("self.stats.blocks_created {} ", self.stats);
+        }
+
+        self.report_timer += duration_value;
+
 
         if work_done {
             return Some(());

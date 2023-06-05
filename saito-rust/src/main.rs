@@ -272,6 +272,7 @@ async fn run_consensus_event_processor(
         ),
         block_producing_timer: 0,
         tx_producing_timer: 0,
+        report_timer: 0,
         create_test_tx,
         storage: Storage::new(Box::new(RustIOHandler::new(
             sender_to_network_controller.clone(),
