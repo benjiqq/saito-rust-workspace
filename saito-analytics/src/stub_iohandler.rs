@@ -7,9 +7,9 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use std::fs;
 use std::io::Error;
 use std::path::Path;
-use std::fmt::{Debug, Formatter};
-use std::fmt::{Result};
+//use std::fmt::{Debug, Formatter};
 use std::fmt;
+//use std::fmt::{Result};
 
 use ahash::AHashMap;
 use log::{debug, info};
@@ -20,7 +20,7 @@ use saito_core::common::defs::{
     push_lock, Currency, SaitoHash, SaitoPrivateKey, SaitoPublicKey, SaitoSignature, Timestamp,
     UtxoSet, LOCK_ORDER_BLOCKCHAIN, LOCK_ORDER_CONFIGS, LOCK_ORDER_MEMPOOL, LOCK_ORDER_WALLET,
 };
-use saito_core::common::test_io_handler::test::TestIOHandler;
+//use saito_core::common::test_io_handler::test::TestIOHandler;
 use saito_core::core::data::block::Block;
 use saito_core::core::data::blockchain::Blockchain;
 use saito_core::core::data::configuration::{Configuration, PeerConfig, Server};
@@ -36,25 +36,26 @@ use saito_core::core::mining_thread::MiningEvent;
 use saito_core::{lock_for_read, lock_for_write};
 //
 use saito_core::common::interface_io::{InterfaceEvent, InterfaceIO};
-use saito_core::common::defs::{PeerIndex, SaitoHash, BLOCK_FILE_EXTENSION};
+use saito_core::common::defs::{PeerIndex, BLOCK_FILE_EXTENSION};
+use saito_core::core::data::peer_service::PeerService;
 
-
+#[derive(Clone, Debug)]
 pub struct TestIOHandler {}
 
-pub impl TestIOHandler {
+impl TestIOHandler {
     pub fn new() -> TestIOHandler {
         TestIOHandler {}
     }
 }
 
-impl fmt::Debug for TestIOHandler {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        //write!(f, "TestIOHandler")
-    }
-}
+// impl fmt::Debug for TestIOHandler {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//         write!(f, "TestIOHandler")
+//     }
+// }
 
-pub fn test_function() {
-    println!("This is a test function in stub_iohandler.rs");
+pub fn test_function(){
+    
 }
 
 #[async_trait]
@@ -163,9 +164,9 @@ impl InterfaceIO for TestIOHandler {
         todo!()
     }
 
-    // fn get_my_services(&self) -> Vec<PeerService> {
-    //     todo!()
-    // }
+    fn get_my_services(&self) -> Vec<PeerService> {
+        todo!()
+    }
     
 }
 

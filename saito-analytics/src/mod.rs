@@ -1,2 +1,2 @@
-mod stub_iohandler;
-mod chain_manager;
+pub mod chain_manager;
+pub mod stub_iohandler;

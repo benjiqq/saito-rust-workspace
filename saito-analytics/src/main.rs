@@ -27,8 +27,12 @@ use saito_core::core::data::peer_collection::PeerCollection;
 use saito_core::core::data::configuration::{Configuration, PeerConfig, Server};
 
 use crate::chain_manager::ChainManager;
-mod stub_iohandler;
 
+pub mod stub_iohandler;
+
+
+use crate::stub_iohandler::TestIOHandler;
+use crate::stub_iohandler::test_function;
 
 fn analyseblock(path: String)  {
     println!("\n >>> read block from disk");
@@ -88,7 +92,9 @@ fn main() {
 
     let chain_manager = ChainManager::new();
 
-    stub_iohandler::test_function();
+    
+
+    
 
     // let wallet = Wallet::new(keys.1, keys.0);
     // let _public_key = wallet.public_key.clone();
