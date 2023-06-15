@@ -43,14 +43,11 @@ pub struct PrettyTx {
     pub transaction_type: TransactionType,
 }
 
-
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PrettySlip {
     //pub public_key: SaitoPublicKey,
     pub amount: Currency,
 }
-
-
 
 use saito_core::common::defs::{
     Currency, SaitoHash, SaitoPrivateKey, SaitoPublicKey, SaitoSignature, SaitoUTXOSetKey,
@@ -89,7 +86,7 @@ pub fn pretty_print_block(block: &Block) -> Result<(), serde_json::Error> {
 pub fn pretty_print_tx(tx: &Transaction) -> Result<(), serde_json::Error> {
     let pretty_tx = PrettyTx {
         timestamp: tx.timestamp,
-        transaction_type: tx.transaction_type,        
+        transaction_type: tx.transaction_type,
     };
 
     let tx_string = serde_json::to_string_pretty(&pretty_tx)?;
@@ -100,7 +97,7 @@ pub fn pretty_print_tx(tx: &Transaction) -> Result<(), serde_json::Error> {
 
 pub fn pretty_print_slip(slip: &Slip) -> Result<(), serde_json::Error> {
     let pretty_slip = PrettySlip {
-        amount: slip.amount,        
+        amount: slip.amount,
     };
 
     let slip_str = serde_json::to_string_pretty(&pretty_slip)?;

@@ -204,20 +204,17 @@ impl ChainManager {
     }
 
     pub fn applyTx(&self, tx: Transaction, utxo_balances: &mut AHashMap<String, u64>) {
-        //apply
         //trace!("applyTx");
         tx.from.iter().for_each(|input| {
             let input_hex = hex::encode(input.public_key);
             let balance = utxo_balances.entry(input_hex).or_insert(0);
             *balance -= input.amount;
-            println!("bal {}", balance);
         });
 
         tx.to.iter().for_each(|output| {
             let output_hex = hex::encode(output.public_key);
             let balance = utxo_balances.entry(output_hex).or_insert(0);
             *balance += output.amount;
-            println!("bal {}", balance);
         });
     }
 
@@ -278,7 +275,6 @@ impl ChainManager {
     //get utxo and write to file
     pub async fn dump_utxoset(&self, threshold: u64) {
         println!("dump utxoset");
-        //let mut file = File::create("data/utxoset.txt"); // Use await and ? here
         let mut file = File::create("data/utxoset.txt").unwrap();
 
         let (blockchain, _blockchain_) =
@@ -426,7 +422,7 @@ impl ChainManager {
         }
     }
 
-    pub async fn create_tx(
+    pub async fn create_tx_map(
         &mut self,
         public_key: &SaitoPublicKey,
         private_key: &SaitoPrivateKey,
@@ -435,6 +431,45 @@ impl ChainManager {
         txs_fee: Currency,
     ) -> AHashMap<SaitoSignature, Transaction> {
         let mut transactions: AHashMap<SaitoSignature, Transaction> = Default::default();
+        let private_key: SaitoPrivateKey;
+        let public_key: SaitoPublicKey;
+
+        {
+            let (wallet, _wallet_) = lock_for_read!(self.wallet_lock, LOCK_ORDER_WALLET);
+
+            public_key = wallet.public_key;
+            private_key = wallet.private_key;
+        }
+
+        //TODO call create_tx_vec and add
+
+        for _i in 0..txs_number {
+            let mut transaction;
+            {
+                let (mut wallet, _wallet_) = lock_for_write!(self.wallet_lock, LOCK_ORDER_WALLET);
+
+                transaction =
+                    Transaction::create(&mut wallet, public_key, txs_amount, txs_fee, false)
+                        .unwrap();
+            }
+
+            transaction.sign(&private_key);
+            transaction.generate(&public_key, 0, 0);
+            transactions.insert(transaction.signature, transaction);
+        }
+
+        return transactions;
+    }
+
+    pub async fn create_tx_vec(
+        &mut self,
+        public_key: &SaitoPublicKey,
+        private_key: &SaitoPrivateKey,
+        txs_number: usize,
+        txs_amount: Currency,
+        txs_fee: Currency,
+    ) -> Vec<Transaction> {
+        let mut txvec: Vec<Transaction> = Default::default();
         let private_key: SaitoPrivateKey;
         let public_key: SaitoPublicKey;
 
@@ -457,16 +492,131 @@ impl ChainManager {
 
             transaction.sign(&private_key);
             transaction.generate(&public_key, 0, 0);
-            transactions.insert(transaction.signature, transaction);
+            //transactions.insert(transaction.signature, transaction);
+            txvec.push(transaction);
         }
 
-        return transactions;
+        return txvec;
+    }
+
+    async fn generate_and_insert_gttx(
+        &self,
+        parent_hash: SaitoHash,
+        public_key: SaitoPublicKey,
+        transactions: &mut Vec<Transaction>,
+    ) {
+        let (blockchain, _blockchain_) =
+            lock_for_read!(self.blockchain_lock, LOCK_ORDER_BLOCKCHAIN);
+
+        let block = blockchain.get_block(&parent_hash).unwrap();
+        let golden_ticket: GoldenTicket =
+            Self::create_golden_ticket(self.wallet_lock.clone(), parent_hash, block.difficulty)
+                .await;
+        let mut gttx: Transaction;
+        {
+            let (wallet, _wallet_) = lock_for_read!(self.wallet_lock, LOCK_ORDER_WALLET);
+
+            gttx = Wallet::create_golden_ticket_transaction(
+                golden_ticket,
+                &wallet.public_key,
+                &wallet.private_key,
+            )
+            .await;
+        }
+        gttx.generate(&public_key, 0, 0);
+        //transactions.insert(gttx.signature, gttx);
+        transactions.push(gttx);
+    }
+
+    //TODO take a vector and return hashmap
+    pub async fn txmap_fromvec(
+        &mut self,
+        txs: &Vec<Transaction>,
+    ) -> AHashMap<SaitoSignature, Transaction> {
+        let mut map: AHashMap<SaitoSignature, Transaction> = AHashMap::new();
+        for tx in txs {
+            map.insert(tx.signature, tx.clone());
+        }
+        map
+    }
+
+    pub async fn make_block_simple_xy(&mut self, txs: &Vec<Transaction>) -> Block {
+        let mut block = Block::new();
+
+        block.id = 1;
+        block.transactions = txs.clone();
+        //block.previous_block_hash = previous_block_hash;
+        //block.burnfee = current_burnfee;
+        //block.timestamp = current_timestamp;
+        //block.difficulty = previous_block_difficulty;
+        //block.creator = *public_key;
+
+        //block.transactions.reserve(transactions.len());
+        //let iter = transactions.drain().map(|(_, tx)| tx);
+        //block.transactions.extend(iter);
+
+        //block.generate_pre_hash();
+        //block.sign(private_key);
+
+        //
+        // hash includes pre-hash and sig, so update
+        //
+        // block.generate_hash();
+        //block.generate();
+
+        block
+    }
+
+    pub async fn make_block_simple(
+        &mut self,
+        //parent_hash: SaitoHash,
+        //timestamp: Timestamp,
+        txs_number: usize,
+        txs_amount: Currency,
+        txs_fee: Currency,
+        tx_vec: Vec<Transaction>,
+    ) //-> Block {
+    {
+        let private_key: SaitoPrivateKey;
+        let public_key: SaitoPublicKey;
+        {
+            let (wallet, _wallet_) = lock_for_read!(self.wallet_lock, LOCK_ORDER_WALLET);
+
+            public_key = wallet.public_key;
+            private_key = wallet.private_key;
+        }
+
+        let mut tx_map: AHashMap<SaitoSignature, Transaction> = self.txmap_fromvec(&tx_vec).await;
+
+        let (configs, _configs_) = lock_for_read!(self.configs, LOCK_ORDER_CONFIGS);
+        let (mut blockchain, _blockchain_) =
+            lock_for_write!(self.blockchain_lock, LOCK_ORDER_BLOCKCHAIN);
+
+        //TODO need create from tx
+        //
+        // create block
+        //
+        // let mut block = Block::create(
+        //     &mut tx_map,
+        //     parent_hash,
+        //     blockchain.borrow_mut(),
+        //     timestamp,
+        //     &public_key,
+        //     &private_key,
+        //     None,
+        //     configs.deref(),
+        // )
+        // .await;
+        // block.generate();
+        // block.sign(&private_key);
+
+        // block
     }
 
     //
-    // create block
+    // make a block
     //
-    pub async fn create_block(
+    pub async fn make_block(
         &mut self,
         parent_hash: SaitoHash,
         timestamp: Timestamp,
@@ -484,41 +634,28 @@ impl ChainManager {
             private_key = wallet.private_key;
         }
 
-        let mut transactions = self
-            .create_tx(&public_key, &private_key, txs_number, txs_amount, txs_fee)
+        let mut tx_vec = self
+            //.create_tx_map(&public_key, &private_key, txs_number, txs_amount, txs_fee)
+            .create_tx_vec(&public_key, &private_key, txs_number, txs_amount, txs_fee)
             .await;
 
+        let mut tx_map: AHashMap<SaitoSignature, Transaction> = self.txmap_fromvec(&tx_vec).await;
+
         if include_valid_golden_ticket {
-            let (blockchain, _blockchain_) =
-                lock_for_read!(self.blockchain_lock, LOCK_ORDER_BLOCKCHAIN);
-
-            let block = blockchain.get_block(&parent_hash).unwrap();
-            let golden_ticket: GoldenTicket =
-                Self::create_golden_ticket(self.wallet_lock.clone(), parent_hash, block.difficulty)
-                    .await;
-            let mut gttx: Transaction;
-            {
-                let (wallet, _wallet_) = lock_for_read!(self.wallet_lock, LOCK_ORDER_WALLET);
-
-                gttx = Wallet::create_golden_ticket_transaction(
-                    golden_ticket,
-                    &wallet.public_key,
-                    &wallet.private_key,
-                )
-                .await;
-            }
-            gttx.generate(&public_key, 0, 0);
-            transactions.insert(gttx.signature, gttx);
+            //TODO
+            //self.generate_and_insert_gttx(&parent_hash, &public_key, &mut transactions).await;
         }
 
         let (configs, _configs_) = lock_for_read!(self.configs, LOCK_ORDER_CONFIGS);
         let (mut blockchain, _blockchain_) =
             lock_for_write!(self.blockchain_lock, LOCK_ORDER_BLOCKCHAIN);
+
+        //TODO need create from tx
         //
         // create block
         //
         let mut block = Block::create(
-            &mut transactions,
+            &mut tx_map,
             parent_hash,
             blockchain.borrow_mut(),
             timestamp,
@@ -563,21 +700,31 @@ impl ChainManager {
             .await;
     }
 
-    pub async fn generate_vip_transactions(&mut self, n: u64, public_key: SaitoPublicKey, private_key: SaitoPrivateKey, vip_amount: u64) -> Vec<Transaction> {
+    pub async fn generate_vip_transactions(
+        &mut self,
+        n: u64,
+        public_key: SaitoPublicKey,
+        private_key: SaitoPrivateKey,
+        vip_amount: u64,
+    ) -> Vec<Transaction> {
         //TODO timestamp?
         let mut transactions = Vec::new();
-        
+
         for _i in 0..n {
             let mut tx = Transaction::create_vip_transaction(public_key, vip_amount);
             tx.generate(&public_key, 0, 0);
             tx.sign(&private_key);
             transactions.push(tx);
         }
-        
+
         transactions
     }
 
-    pub async fn generate_tx(&mut self, num_ip_transactions: u64, vip_amount: u64) -> Vec<Transaction> {
+    pub async fn generate_tx(
+        &mut self,
+        num_ip_transactions: u64,
+        vip_amount: u64,
+    ) -> Vec<Transaction> {
         // create initial transactions
         //
         let private_key: SaitoPrivateKey;
@@ -589,7 +736,14 @@ impl ChainManager {
             private_key = wallet.private_key;
         }
 
-        let transactions = self.generate_vip_transactions(num_ip_transactions as u64, public_key, private_key, vip_amount).await;
+        let transactions = self
+            .generate_vip_transactions(
+                num_ip_transactions as u64,
+                public_key,
+                private_key,
+                vip_amount,
+            )
+            .await;
         transactions
     }
 
@@ -602,7 +756,7 @@ impl ChainManager {
         //
         // create first block
         //
-        let mut block = self.create_block([0; 32], timestamp, 0, 0, 0, false).await;
+        let mut block = self.make_block([0; 32], timestamp, 0, 0, 0, false).await;
 
         // //iterate over the transactions vector and add each transaction to the block
         // for tx in transactions {
@@ -638,7 +792,7 @@ impl ChainManager {
         vip_amount: Currency,
         timestamp: Timestamp,
     ) {
-        
+
         //let transactions = self.generate_tx(num_ip_transactions as u64, vip_amount).await;
 
         //self.initialize_with_block(block);
