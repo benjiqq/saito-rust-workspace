@@ -133,6 +133,7 @@ impl Blockchain {
         let previous_block_hash = self.blockring.get_latest_block_hash();
         // let previous_block_hash = block.previous_block_hash;
 
+        // --------------------
         // sanity checks
         if self.blocks.contains_key(&block_hash) {
             error!(
@@ -141,7 +142,12 @@ impl Blockchain {
             );
             return AddBlockResult::BlockAlreadyExists;
         }
+        // --------------------
 
+
+        // --------------------
+        // get_missing_blocks
+        // --------------------
         //
         // TODO -- david review -- should be no need for recursive fetch
         // as each block will fetch the parent on arrival and processing
@@ -150,6 +156,7 @@ impl Blockchain {
         //
         // get missing block
         //
+        trace!("get missing block");
         if !self.blockring.is_empty() && self.get_block(&block.previous_block_hash).is_none() {
             if block.previous_block_hash == [0; 32] {
                 trace!(
@@ -164,6 +171,7 @@ impl Blockchain {
                         iterate!(mempool.blocks_queue, 100).any(|b| block_hash == b.hash);
                 }
                 if !block_in_mempool_queue {
+                    trace!("fetch_missing_block");
                     let result = network
                         .fetch_missing_block(
                             block_hash,
@@ -203,8 +211,10 @@ impl Blockchain {
             );
         }
 
-        //
+        // --------------------
         // pre-validation
+        // --------------------
+
         //
         // this would be a great place to put in a prevalidation check
         // once we are finished implementing Saito Classic. Goal would
@@ -241,6 +251,7 @@ impl Blockchain {
             .blockring
             .contains_block_hash_at_block_id(block_id, block_hash)
         {
+            trace!("add_block to blockring");
             self.blockring.add_block(&block);
         } else {
             // error!(

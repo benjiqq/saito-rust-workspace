@@ -216,8 +216,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let directory_path = matches.value_of("blockdir").unwrap_or(default_path);
     
-    run_utxo(directory_path.to_string(), threshold).await;
+    //run_utxo(directory_path.to_string(), threshold).await;
 
+    let mut r = runner::ChainRunner::new();
+    r.create_gen_block().await;
+    
+    
+
+    println!("....");
+    
+
+    //make issuance
+
+    // let slips = self.storage.get_token_supply_slips_from_disk().await;
+    //     let (wallet, _wallet_) = lock_for_read!(self.wallet, LOCK_ORDER_WALLET);
+    //     let mut txs: Vec<Transaction> = vec![];
+    //     for slip in slips {
+    //         debug!("{:?} slip public key", hex::encode(slip.public_key));
+    //         let mut tx = Transaction::create_issuance_transaction(slip.public_key, slip.amount);
+    //         tx.sign(&wallet.private_key);
+    //         txs.push(tx);
+    //     }
     
     Ok(())
 }

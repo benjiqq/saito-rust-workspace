@@ -878,6 +878,7 @@ impl Block {
         //
         // calculate total fees
         //
+        trace!("calculate total fees");
         for (index, transaction) in self.transactions.iter().enumerate() {
             if !transaction.is_fee_transaction() {
                 cv.total_fees += transaction.total_fees;
@@ -898,6 +899,7 @@ impl Block {
         //
         // calculate automatic transaction rebroadcasts / ATR / atr
         //
+        trace!("calculate automatic transaction rebroadcasts");
         if self.id > GENESIS_PERIOD + 1 {
             let pruned_block_hash = blockchain
                 .blockring
@@ -971,6 +973,7 @@ impl Block {
         //
         // burn fee, difficulty and avg_income figures
         //
+        trace!("burn fee");
         if let Some(previous_block) = blockchain.blocks.get(&self.previous_block_hash) {
             cv.avg_income = previous_block.avg_income;
             cv.avg_variance = previous_block.avg_variance;
@@ -1035,6 +1038,7 @@ impl Block {
         //
         // calculate payments to miners / routers / stakers
         //
+        trace!("calculate payments to miners");
         if let Some(gt_index) = cv.gt_index {
             let golden_ticket: GoldenTicket =
                 GoldenTicket::deserialize_from_net(&self.transactions[gt_index].data);
@@ -1479,7 +1483,7 @@ impl Block {
         configs: &(dyn Configuration + Send + Sync),
     ) -> bool {
         // TODO SYNC : Add the code to check whether this is the genesis block and skip validations
-
+        trace!("validate");
         if let BlockType::Ghost = self.block_type {
             // block validates since it's a ghost block
             return true;
@@ -1701,6 +1705,7 @@ impl Block {
         }
 
         // trace!(" ... block.validate: (merkle rt) {:?}", create_timestamp());
+        trace!(" ... block.validate");
 
         //
         // validate atr
@@ -1844,6 +1849,8 @@ impl Block {
         if !transactions_valid {
             error!("ERROR 579128: Invalid transactions found, block validation failed");
         }
+
+        trace!("transactions_valid {}", transactions_valid);
 
         transactions_valid
     }
