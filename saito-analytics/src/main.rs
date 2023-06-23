@@ -77,56 +77,13 @@ fn setup_logging() {
     tracing_subscriber::registry().with(fmt_layer).init();
 }
 
-#[tokio::main(flavor = "multi_thread")]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    info!("saito analytics");
+async fn run_utxo(directory_path: String, threshold: u64) {
 
-    let default_path = "../../sampleblocks";
+    info!("run_utxo");
+
     let utxodump_file = "utxoset.dat";
 
-    setup_logging();
-
     let mut r = runner::ChainRunner::new();
-
-    //utxocalc based on sample blocks
-    //run check on static path
-
-    fn is_u64(val: String) -> Result<(), String> {
-        match val.parse::<u64>() {
-            Ok(_) => Ok(()),
-            Err(_) => Err(String::from("This value must be a valid u64")),
-        }
-    }
-
-    let matches = App::new("Saito")
-        .arg(
-            Arg::with_name("blockdir")
-                .long("blockdir")
-                .value_name("BLOCKDIR")
-                .help("Sets a custom block path")
-                .takes_value(true),
-        )
-        .arg(
-            Arg::with_name("threshold")
-                .long("threshold")
-                .value_name("THRESHOLD")
-                .help("Sets a custom threshold")
-                .takes_value(true)
-                .default_value("1")
-                .validator(|v| match v.parse::<u64>() {
-                    Ok(_) => Ok(()),
-                    Err(_) => Err(String::from("This value must be a valid u64")),
-                }),
-        )
-        .get_matches();
-
-    let threshold: u64 = matches
-        .value_of("threshold")
-        .unwrap_or("1")
-        .parse()
-        .unwrap();
-
-    let directory_path = matches.value_of("blockdir").unwrap_or(default_path);
 
     r.load_blocks_from_path(&directory_path).await;
 
@@ -209,5 +166,58 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
+}
+
+#[tokio::main(flavor = "multi_thread")]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    setup_logging();
+    info!("saito analytics");
+
+    let default_path = "../../sampleblocks";
+    
+
+    //utxocalc based on sample blocks
+    //run check on static path
+
+    fn is_u64(val: String) -> Result<(), String> {
+        match val.parse::<u64>() {
+            Ok(_) => Ok(()),
+            Err(_) => Err(String::from("This value must be a valid u64")),
+        }
+    }
+
+    let matches = App::new("Saito")
+        .arg(
+            Arg::with_name("blockdir")
+                .long("blockdir")
+                .value_name("BLOCKDIR")
+                .help("Sets a custom block path")
+                .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("threshold")
+                .long("threshold")
+                .value_name("THRESHOLD")
+                .help("Sets a custom threshold")
+                .takes_value(true)
+                .default_value("1")
+                .validator(|v| match v.parse::<u64>() {
+                    Ok(_) => Ok(()),
+                    Err(_) => Err(String::from("This value must be a valid u64")),
+                }),
+        )
+        .get_matches();
+
+    let threshold: u64 = matches
+        .value_of("threshold")
+        .unwrap_or("1")
+        .parse()
+        .unwrap();
+
+    let directory_path = matches.value_of("blockdir").unwrap_or(default_path);
+    
+    run_utxo(directory_path.to_string(), threshold).await;
+
+    
     Ok(())
 }
