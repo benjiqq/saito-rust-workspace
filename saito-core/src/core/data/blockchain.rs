@@ -247,6 +247,7 @@ impl Blockchain {
         // needing to borrow the value back for insertion into the BlockRing.
         //
         // TODO : check if this "if" condition can be moved to an assert
+        trace!("prevalidation");
         if !self
             .blockring
             .contains_block_hash_at_block_id(block_id, block_hash)
@@ -284,7 +285,7 @@ impl Blockchain {
         let mut new_chain_hash = block_hash;
         let mut old_chain_hash = previous_block_hash;
         let mut am_i_the_longest_chain = false;
-
+        trace!("find shared ancestor");
         while !shared_ancestor_found {
             trace!(
                 "checking new chain hash : {:?}",
@@ -418,13 +419,13 @@ impl Blockchain {
         // viable.
         //
         return if am_i_the_longest_chain {
-            debug!("this is the longest chain");
+            debug!(">> this is the longest chain");
             self.blocks.get_mut(&block_hash).unwrap().in_longest_chain = true;
 
             let does_new_chain_validate = self
                 .validate(new_chain.as_slice(), old_chain.as_slice(), storage, configs)
                 .await;
-
+            trace!("???? does_new_chain_validate {}", does_new_chain_validate);
             if does_new_chain_validate {
                 self.add_block_success(block_hash, network, storage, mempool, configs)
                     .await;
@@ -499,7 +500,7 @@ impl Blockchain {
         //  because that's already happening in send_blocks_to_blockchain
         //  So who is in charge here?
         //  is send_blocks_to_blockchain calling add_block or
-        //  is blockchain calling mempool.on_chain_reorganization?
+        //  is blockchain calling mempool.on_เchain_reorganization?
         //
         //
         {
