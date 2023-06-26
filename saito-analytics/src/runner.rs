@@ -218,7 +218,7 @@ impl ChainRunner {
             let ts = 1;
 
             let genblock: Block = mem.bundle_genesis_block(&mut blockchain, ts, configs.deref()).await;
-            println!("add block");
+            info!("add block");
             let res = blockchain
                         .add_block(
                             genblock,

@@ -20,13 +20,17 @@ use std::str::FromStr;
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::sync::RwLock;
-use tracing_subscriber;
-use tracing_subscriber::filter::Directive;
-use tracing_subscriber::filter::LevelFilter;
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::util::SubscriberInitExt;
-use tracing_subscriber::EnvFilter;
-use tracing_subscriber::Layer;
+use log::{LevelFilter};
+
+//use tracing_subscriber;
+// use tracing_subscriber::filter::Directive;
+// use tracing_subscriber::filter::LevelFilter;
+// use tracing_subscriber::layer::SubscriberExt;
+// use tracing_subscriber::util::SubscriberInitExt;
+// use tracing_subscriber::EnvFilter;
+// use tracing_subscriber::Layer;
+// use tracing_subscriber::fmt::format::{FmtSpan, Format};
+// use tracing_subscriber::fmt::time::ChronoUtc;
 
 use bs58;
 use saito_core::common::defs::{
@@ -53,29 +57,43 @@ pub fn create_timestamp() -> Timestamp {
         .as_millis() as Timestamp
 }
 
-fn setup_logging() {
-    let mut filter = EnvFilter::from_default_env();
+// fn setup_logging() {
+//     let mut filter = EnvFilter::from_default_env();
 
-    let directives = vec![
-        "tokio_tungstenite",
-        "tungstenite",
-        "mio::poll",
-        "hyper::proto",
-        "hyper::client",
-        "want",
-        "reqwest::async_impl",
-        "reqwest::connect",
-        "warp::filters",
-    ];
+//     let directives = vec![
+//         "tokio_tungstenite",
+//         "tungstenite",
+//         "mio::poll",
+//         "hyper::proto",
+//         "hyper::client",
+//         "want",
+//         "reqwest::async_impl",
+//         "reqwest::connect",
+//         "warp::filters",
+//     ];
 
-    for directive in directives {
-        filter = filter.add_directive(Directive::from_str(&format!("{}=info", directive)).unwrap());
-    }
+//     for directive in directives {
+//         filter = filter.add_directive(Directive::from_str(&format!("{}=info", directive)).unwrap());
+//     }
 
-    let fmt_layer = tracing_subscriber::fmt::Layer::default().with_filter(filter);
+//     //let fmt_layer = tracing_subscriber::fmt::Layer::default().with_filter(filter);
+//     //  let fmt_layer = tracing_subscriber::fmt::Layer::builder()
+//     //     .with_target(false)
+//     //     .with_span_events(FmtSpan::FULL) // Full file path and line number
+//     //     .fmt_fields(Format::default().with_thread_names(true)) // Optional: Include thread names
+//     //     .fmt_fields(Format::default().with_thread_ids(true)) // Optional: Include thread IDs
+//     //     .json() // Optional: Output logs in JSON format
+//     //     .with_timer(ChronoUtc::rfc3339()) // Optional: Use RFC 3339 timestamps
+//     //     .with_filter(filter)
+//     //     .build();
+//      let fmt_layer = tracing_subscriber::fmt::Layer::default()
+//         .with_filter(filter)
+//         .fmt_fields(tracing_subscriber::fmt::format::DefaultFields::default())
+//         .fmt_span(tracing_subscriber::fmt::format::FmtSpan::FULL); // include line numbers in your log
 
-    tracing_subscriber::registry().with(fmt_layer).init();
-}
+
+//     tracing_subscriber::registry().with(fmt_layer).init();
+// }
 
 async fn run_utxo(directory_path: String, threshold: u64) {
 
@@ -168,9 +186,19 @@ async fn run_utxo(directory_path: String, threshold: u64) {
 
 }
 
+
+
+fn setup_log() {
+    log4rs::init_file("log4rs.yml", Default::default()).unwrap();
+    log::info!("start logging");
+
+}
+
+
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    setup_logging();
+    //setup_logging();
+    setup_log();
     info!("saito analytics");
 
     let default_path = "../../sampleblocks";
@@ -218,13 +246,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     //run_utxo(directory_path.to_string(), threshold).await;
 
-    let mut r = runner::ChainRunner::new();
-    r.create_gen_block().await;
-    
-    
+    //let mut r = runner::ChainRunner::new();
+    //r.create_gen_block().await;
 
-    println!("....");
+    //println!("....");
+
+    // let keys = generate_keys();
+    // let wallet = Wallet::new(keys.1, keys.0);
+    // let _public_key = wallet.public_key.clone();
+    // let _private_key = wallet.private_key.clone();
+    // let wallet_lock = Arc::new(RwLock::new(wallet));
+    // let blockchain = Arc::new(RwLock::new(Blockchain::new(wallet_lock.clone())));
     
+    let mut r = runner::ChainRunner::new();
+    //this will make issuance
+    r.create_gen_block().await;
+    debug!("created...");
 
     //make issuance
 
